@@ -3,6 +3,8 @@ title: "Building a Cloud-Native DevSecOps Platform: End-to-End with Terraform, A
 classes: wide
 header:
   teaser: /assets/images/DevSecOps/Cloud-Native/DevSecOps_Warrior.png
+image:
+  path: /assets/images/DevSecOps/Cloud-Native/devsecops-cloud-native.jpg
 ribbon: purple
 description: "A real-world guide to architecting an enterprise-grade DevSecOps platform from the ground up, integrating Terraform, Ansible, Tekton, ArgoCD, and continuous security scanning."
 categories:
