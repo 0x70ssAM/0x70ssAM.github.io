@@ -2,10 +2,17 @@
 title: "DevSecOps Roadmap 2026 — Interactive 17-Phase Guide"
 classes: wide
 header:
-  teaser: /assets/images/DevSecOps/Roadmap/DevSecOps_Roadmap_teaser.jpg
-  overlay_image: /assets/images/DevSecOps/Roadmap/DevSecOps_Roadmap_teaser.jpg
+  teaser: /assets/images/DevSecOps/Roadmap/DevSecOps_Roadmap.png
+  overlay_image: /assets/images/DevSecOps/Roadmap/DevSecOps_Roadmap.png
   overlay_filter: 0.4
-image: /assets/images/DevSecOps/Roadmap/DevSecOps_Roadmap_teaser.jpg
+
+image:
+  path: /assets/images/DevSecOps/Roadmap/DevSecOps_Roadmap.png
+
+seo:
+  type: article
+og_image: /assets/images/DevSecOps/Roadmap/DevSecOps_Roadmap.png
+
 ribbon: blue
 description: "A Native DevSecOps roadmap covering SAST, SCA, SBOM, SLSA, Zero Trust, eBPF runtime, and AI/ML security — from beginner to expert."
 excerpt: "Interactive 17-phase DevSecOps roadmap — SAST, SCA, SBOM, SLSA, Zero Trust, eBPF runtime, AI/ML security. From beginner to expert."
