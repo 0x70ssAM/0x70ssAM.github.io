@@ -2,10 +2,11 @@
 title: "DevSecOps Roadmap 2026: A Comprehensive Guide from Foundations to Expert"
 classes: wide
 header:
-  teaser: /assets/images/DevSecOps/Cloud-Native/DevSecOps_Warrior.png
-image:
-  path: /assets/images/DevSecOps/Cloud-Native/devsecops-cloud-native.jpg
-ribbon: purple
+  teaser: /assets/images/DevSecOps/Roadmap/DevSecOps_Roadmap_teaser.jpg
+  overlay_image: /assets/images/DevSecOps/Roadmap/DevSecOps_Roadmap_teaser.jpg
+  overlay_filter: 0.4
+image: /assets/images/DevSecOps/Roadmap/DevSecOps_Roadmap_teaser.jpg
+ribbon: blue
 description: "A structured, opinionated DevSecOps roadmap covering 17 phases — from Linux fundamentals to AI/ML security — synthesised from roadmap.sh, hahwul/DevSecOps, NIST SSDF, OWASP SAMM, and real-world enterprise platform experience."
 categories:
   - DevSecOps

@@ -7,7 +7,7 @@ header:
   overlay_filter: 0.4
 image: /assets/images/DevSecOps/Roadmap/DevSecOps_Roadmap_teaser.jpg
 ribbon: blue
-description: "An AI-native DevSecOps roadmap covering SAST, SCA, SBOM, SLSA, Zero Trust, eBPF runtime, and AI/ML security — from beginner to expert."
+description: "A Native DevSecOps roadmap covering SAST, SCA, SBOM, SLSA, Zero Trust, eBPF runtime, and AI/ML security — from beginner to expert."
 excerpt: "Interactive 17-phase DevSecOps roadmap — SAST, SCA, SBOM, SLSA, Zero Trust, eBPF runtime, AI/ML security. From beginner to expert."
 categories:
   - DevSecOps
