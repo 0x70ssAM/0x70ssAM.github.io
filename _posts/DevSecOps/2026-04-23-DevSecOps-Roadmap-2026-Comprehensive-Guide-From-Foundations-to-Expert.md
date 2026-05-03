@@ -677,14 +677,14 @@ flowchart LR
 
 **Community Curated:**
 - [hahwul/DevSecOps](https://github.com/hahwul/DevSecOps) — Community roadmap with resources by SDLC phase
-- [TaptuIT Awesome DevSecOps](https://github.com/TaptuIT/awesome-devsecops) — Comprehensive tool and resource list
+- [Awesome DevSecOps](https://github.com/JakobTheDev/awesome-devsecops) — Comprehensive tool and resource list
 - [Hysnsec Awesome Threat Modelling](https://github.com/hysnsec/awesome-threat-modelling) — Threat modeling books, tools, workshops
 - [Hysnsec Awesome Policy-as-Code](https://github.com/hysnsec/awesome-policy-as-code) — OPA, Rego, Kyverno resources
 
 **Platform / Vendor:**
 - [roadmap.sh/devsecops](https://roadmap.sh/devsecops) — Community DevSecOps roadmap
 - [Practical DevSecOps Blog](https://www.practical-devsecops.com/blog/) — 2026 practices and trends
-- [NIST SSDF SP 800-218](https://csrc.nist.gov/publications/detail/sp/800-218/final) — Official SSDF standard
+- [NIST SSDF SP 800-218](https://csrc.nist.gov/pubs/sp/800/218/final) — Official SSDF standard
 
 ---
 
@@ -724,7 +724,7 @@ The DevSecOps landscape is moving fast. Here are the areas demanding attention b
 
 | Resource | Link |
 |:---|:---|
-| NIST SSDF SP 800-218 | [csrc.nist.gov](https://csrc.nist.gov/publications/detail/sp/800-218/final) |
+| NIST SSDF SP 800-218 | [csrc.nist.gov](https://csrc.nist.gov/pubs/sp/800/218/final) |
 | OWASP SAMM | [owaspsamm.org](https://owaspsamm.org/) |
 | OWASP ASVS | [owasp.org/www-project-asvs](https://owasp.org/www-project-application-security-verification-standard/) |
 | OWASP DSOMM | [owasp.org/www-project-dsomm](https://owasp.org/www-project-devsecops-maturity-model/) |
