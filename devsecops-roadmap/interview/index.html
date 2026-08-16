@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DevOps → DevSecOps Interview Prep</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e14; --panel:#111823; --panel-2:#0d131c; --panel-3:#0b1119;
+    --border:#1e2a38; --border-light:#2a3a4d;
+    --text:#dbe4ee; --text-dim:#9aa8ba; --text-faint:#5a6b80;
+    --dev:#3ddc97; --dev-dim:#173327;
+    --sec:#a78bfa; --sec-dim:#241f3d;
+    --ops:#f5a623; --ops-dim:#3a2a0d;
+    --neutral:#7c8a9c; --neutral-dim:#1b2530;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; padding:32px 14px 80px; min-height:100vh; display:flex; justify-content:center;}
+  code{font-family:'JetBrains Mono',monospace; font-size:.92em; background:var(--panel-3); padding:1px 5px; border-radius:4px; color:var(--dev);}
+  .window{width:100%; max-width:1000px; background:var(--panel); border:1px solid var(--border); border-radius:10px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+  .titlebar{display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--panel-2); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:20;}
+  .dot{width:11px;height:11px;border-radius:50%;}
+  .dot.r{background:#ff5f56;} .dot.y{background:#ffbd2e;} .dot.g{background:#27c93f;}
+  .titlebar-path{margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text-dim);}
+  .content{padding:32px clamp(16px,4vw,48px) 48px;}
+
+  .prompt{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--dev); margin-bottom:6px;}
+  .prompt::before{content:"$ "; color:var(--text-faint);}
+  .cursor{display:inline-block;width:7px;height:14px;background:var(--dev);margin-left:2px;vertical-align:-2px;animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  h1{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:clamp(20px,3vw,28px); letter-spacing:-0.02em; margin-bottom:6px;}
+  .subtitle{color:var(--text-dim); font-size:14px; margin-bottom:24px;}
+
+  .infobox{background:var(--panel-3); border:1px solid var(--border); border-left:3px solid var(--neutral); border-radius:6px; padding:16px 18px; margin-bottom:22px; font-size:13.5px; line-height:1.75; color:var(--text-dim);}
+  .infobox h3{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px;}
+  .infobox p{margin-bottom:10px;} .infobox p:last-child{margin-bottom:0;}
+  .infobox b{color:var(--text);}
+  .infobox .highlight{color:var(--sec);}
+
+  /* ---- glossary ---- */
+  .glossary-wrap{margin-bottom:28px;}
+  .glossary-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;}
+  .glossary-head h3{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text); text-transform:uppercase; letter-spacing:.05em;}
+  .glossary-sub{font-size:12px; color:var(--text-faint);}
+  .glossary-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px;}
+  .gcard{background:var(--panel-3); border:1px solid var(--border); border-radius:7px; padding:10px 12px;}
+  .gcard .term{font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--sec);}
+  .gcard .full{font-size:11.5px; color:var(--text-dim); margin-top:3px; line-height:1.4;}
+  .gcard .full b{color:var(--text);}
+  .gcard .purpose{font-size:11px; color:var(--text-faint); margin-top:4px; line-height:1.4;}
+  .gcard .purpose::before{content:"↳ ";}
+  @media (max-width:760px){ .glossary-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+
+  .legend{display:flex; gap:18px; margin:26px 0 18px; flex-wrap:wrap;}
+  .legend-item{display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-dim); letter-spacing:0.04em;}
+  .legend-dot{width:8px;height:8px;border-radius:2px;}
+  .pipeline{position:relative; display:grid; grid-template-columns:repeat(8,1fr); gap:0; margin-bottom:6px;}
+  .track{position:absolute; top:34px; left:34px; right:34px; height:2px; background:var(--border); z-index:0; overflow:hidden;}
+  .track-fill{position:absolute; top:0; left:0; height:100%; width:40%; background:linear-gradient(90deg, transparent, var(--dev), var(--sec), var(--ops), transparent); animation:flow 3.5s linear infinite;}
+  @keyframes flow{0%{left:-40%;} 100%{left:100%;}}
+  @media (prefers-reduced-motion:reduce){.track-fill{animation:none;left:0;width:100%;opacity:.5;} .cursor{animation:none;}}
+  .stage{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; padding:0 4px; opacity:0; animation:rise .5s ease forwards;}
+  @keyframes rise{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+  .node{width:56px;height:56px;border-radius:50%; background:var(--panel-2); border:1.5px solid var(--border-light); display:flex;align-items:center;justify-content:center; cursor:pointer; transition:transform .18s ease, box-shadow .18s ease;}
+  .node svg{width:22px;height:22px;stroke:var(--text-dim); transition:stroke .18s ease;}
+  .stage:hover .node{transform:translateY(-3px);}
+  .stage.dev .node{border-color:var(--dev);} .stage.dev .node svg{stroke:var(--dev);}
+  .stage.sec .node{border-color:var(--sec);} .stage.sec .node svg{stroke:var(--sec);}
+  .stage.ops .node{border-color:var(--ops);} .stage.ops .node svg{stroke:var(--ops);}
+  .stage.active .node{background:var(--dev-dim); box-shadow:0 0 0 4px rgba(61,220,151,0.12);}
+  .stage.active.sec .node{background:var(--sec-dim); box-shadow:0 0 0 4px rgba(167,139,250,0.14);}
+  .stage.active.ops .node{background:var(--ops-dim); box-shadow:0 0 0 4px rgba(245,166,35,0.14);}
+  .stage-name{margin-top:10px; font-size:12.5px; font-weight:600; text-align:center;}
+  .stage-tag{margin-top:4px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; padding:1px 6px; border-radius:4px;}
+  .stage.dev .stage-tag{color:var(--dev); background:var(--dev-dim);}
+  .stage.sec .stage-tag{color:var(--sec); background:var(--sec-dim);}
+  .stage.ops .stage-tag{color:var(--ops); background:var(--ops-dim);}
+  .detail{margin-top:28px; background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:22px 24px; animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:translateY(0);}}
+  .detail-head{display:flex; align-items:center; gap:10px; margin-bottom:16px; font-family:'JetBrains Mono',monospace;}
+  .detail-head .tag-pill{font-size:10.5px; letter-spacing:0.05em; text-transform:uppercase; padding:2px 8px; border-radius:4px;}
+  .detail-head h3{font-size:16px; font-weight:700;}
+  .cols{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px;}
+  .col h4{font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-faint); margin-bottom:9px;}
+  .col ul{list-style:none;}
+  .col li{font-size:13px; color:var(--text); padding:3px 0 3px 16px; position:relative; line-height:1.5;}
+  .col li::before{content:"›"; position:absolute; left:0; color:var(--text-faint);}
+  .diagram-footnote{margin-top:20px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-faint); text-align:center; line-height:1.7;}
+
+  .divider{border:none; border-top:1px solid var(--border); margin:36px 0;}
+  .nav-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:10px;}
+  .nav-head h2{font-family:'JetBrains Mono',monospace; font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim);}
+  .toggle-btn{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-dim); background:var(--panel-3); border:1px solid var(--border-light); border-radius:6px; padding:6px 12px; cursor:pointer; transition:border-color .15s, color .15s;}
+  .toggle-btn:hover{border-color:var(--text-dim); color:var(--text);}
+  .navgroup{margin-bottom:10px;}
+  .navgroup-label{font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px;}
+  .pills{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;}
+  .pill{font-size:12px; padding:5px 11px; border-radius:14px; border:1px solid var(--border-light); color:var(--text-dim); text-decoration:none; background:var(--panel-3); transition:border-color .15s,color .15s;}
+  .pill:hover{color:var(--text); border-color:var(--text-dim);}
+  .pill.dev{border-color:rgba(61,220,151,.35);} .pill.dev:hover{color:var(--dev);border-color:var(--dev);}
+  .pill.sec{border-color:rgba(167,139,250,.35);} .pill.sec:hover{color:var(--sec);border-color:var(--sec);}
+  .pill.ops{border-color:rgba(245,166,35,.35);} .pill.ops:hover{color:var(--ops);border-color:var(--ops);}
+
+  .topic{scroll-margin-top:70px; background:var(--panel-2); border:1px solid var(--border); border-left:3px solid var(--neutral); border-radius:8px; padding:20px 22px; margin-bottom:16px;}
+  .topic.dev{border-left-color:var(--dev);} .topic.sec{border-left-color:var(--sec);} .topic.ops{border-left-color:var(--ops);}
+  .topic-head{display:flex; align-items:baseline; gap:10px; margin-bottom:6px; flex-wrap:wrap;}
+  .topic-num{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); letter-spacing:.04em;}
+  .topic h2{font-size:15.5px; font-weight:700;}
+  .topic-tag{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; padding:1px 7px; border-radius:4px; margin-left:auto;}
+  .topic.dev .topic-tag{color:var(--dev); background:var(--dev-dim);}
+  .topic.sec .topic-tag{color:var(--sec); background:var(--sec-dim);}
+  .topic.ops .topic-tag{color:var(--ops); background:var(--ops-dim);}
+  .topic-intro{font-size:13px; color:var(--text-dim); line-height:1.7; margin:8px 0 4px;}
+
+  details.qa{border-bottom:1px solid var(--border); padding:12px 0;}
+  details.qa:first-of-type{border-top:1px solid var(--border); margin-top:10px;}
+  details.qa:last-child{border-bottom:none;}
+  details.qa summary{cursor:pointer; font-size:13.5px; font-weight:600; list-style:none; display:flex; align-items:flex-start; gap:9px; color:var(--text);}
+  details.qa summary::-webkit-details-marker{display:none;}
+  details.qa summary::before{content:"▸"; color:var(--text-faint); flex-shrink:0; transition:transform .15s ease; margin-top:1px;}
+  details.qa[open] summary::before{transform:rotate(90deg);}
+  .answer{margin-top:10px; padding-left:19px; border-left:2px solid var(--border-light); color:var(--text-dim); font-size:13.3px; line-height:1.75;}
+  .answer b, .answer strong{color:var(--text);}
+  .answer ul{margin:6px 0 6px 18px;} .answer li{margin-bottom:3px;}
+  .ref{margin-top:8px; padding-left:19px; font-size:11.8px; color:var(--text-faint); font-style:italic;}
+
+  table.tools{width:100%; border-collapse:collapse; margin:10px 0; font-size:13px;}
+  table.tools th, table.tools td{border:1px solid var(--border); padding:9px 12px; text-align:left;}
+  table.tools th{background:var(--panel-3); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.04em;}
+  table.tools td{color:var(--text-dim);}
+  table.tools b{color:var(--sec);}
+
+  .quickfire{background:var(--panel-3); border:1px solid var(--border); border-radius:8px; padding:18px 22px; font-family:'JetBrains Mono',monospace; font-size:12.8px; line-height:2; color:var(--dev);}
+  .quickfire div::before{content:"> "; color:var(--text-faint);}
+  .quickfire span{color:var(--text-dim);}
+
+  .footer-note{margin-top:32px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-faint); text-align:center; line-height:1.8;}
+
+  @media (max-width:760px){
+    .pipeline{grid-template-columns:repeat(4,1fr); row-gap:36px;}
+    .track{display:none;}
+    .cols{grid-template-columns:1fr;}
+  }
+
+  /* ---- pipeline diagram: overlay checkpoints/gates + feedback arc ---- */
+  .pipeline-wrap{position:relative; padding-top:34px;}
+  .overlay-layer{position:absolute; inset:0; top:34px; pointer-events:none;}
+  .overlay-check, .overlay-gate{position:absolute; top:0; transform:translate(-50%,-50%); pointer-events:auto; cursor:pointer; z-index:2;}
+  .overlay-check{width:11px;height:11px;border-radius:50%; background:var(--panel-2); border:2px solid var(--text-faint); transition:border-color .15s;}
+  .overlay-check:hover{border-color:var(--sec);}
+  .overlay-check.active{border-color:var(--sec); background:var(--sec-dim);}
+  .overlay-gate{width:15px;height:15px; background:var(--ops-dim); border:2px solid var(--ops); transform:translate(-50%,-50%) rotate(45deg); transition:background .15s;}
+  .overlay-gate:hover, .overlay-gate.active{background:var(--ops);}
+  .overlay-label{position:absolute; top:14px; left:50%; transform:translateX(-50%); font-size:9px; font-family:'JetBrains Mono',monospace; white-space:nowrap; color:var(--text-faint); letter-spacing:.02em;}
+  .overlay-gate .overlay-label{color:var(--ops); font-weight:600; transform:translateX(-50%) rotate(-45deg);}
+  @media (max-width:760px){ .overlay-label{display:none;} }
+  .feedback-svg{position:absolute; left:0; right:0; top:-38px; width:100%; height:34px; overflow:visible; pointer-events:none;}
+  .feedback-path{stroke:var(--text-faint); stroke-width:1.5; stroke-dasharray:4 4; opacity:.55;}
+  @media (max-width:600px){ .feedback-svg{display:none;} }
+
+  /* ---- pipeline simulator ---- */
+  .sim-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; flex-wrap:wrap; gap:10px;}
+  .sim-head h2{font-family:'JetBrains Mono',monospace; font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim);}
+  .sim-scenario{display:flex; gap:6px; background:var(--panel-3); border:1px solid var(--border); border-radius:8px; padding:3px;}
+  .sim-scenario-btn{font-family:'JetBrains Mono',monospace; font-size:11px; padding:5px 12px; border-radius:6px; border:none; background:transparent; color:var(--text-faint); cursor:pointer;}
+  .sim-scenario-btn.active{background:var(--panel-2); color:var(--text); box-shadow:0 0 0 1px var(--border-light);}
+  .sim-sub{font-size:12.5px; color:var(--text-faint); margin-bottom:20px;}
+  .sim-zones{display:flex; flex-direction:column; gap:10px; margin-bottom:16px;}
+  .sim-zone{border:1px solid var(--border); border-radius:8px; padding:12px 14px 16px; position:relative;}
+  .sim-zone-label{font-family:'JetBrains Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; display:inline-block; padding:2px 8px; border-radius:4px;}
+  .sim-zone.dev{border-left:3px solid var(--dev);} .sim-zone.dev .sim-zone-label{color:var(--dev); background:var(--dev-dim);}
+  .sim-zone.sec{border-left:3px solid var(--sec);} .sim-zone.sec .sim-zone-label{color:var(--sec); background:var(--sec-dim);}
+  .sim-zone.ops{border-left:3px solid var(--ops);} .sim-zone.ops .sim-zone-label{color:var(--ops); background:var(--ops-dim);}
+  .sim-steps{display:flex; gap:8px; flex-wrap:wrap; align-items:center; position:relative;}
+  .sim-step{display:flex; flex-direction:column; align-items:center; gap:5px; min-width:64px;}
+  .sim-step-dot{width:12px;height:12px;border-radius:50%; background:var(--panel-2); border:2px solid var(--border-light); transition:all .2s ease;}
+  .sim-step.gate .sim-step-dot{border-radius:3px; transform:rotate(45deg); width:11px; height:11px; border-color:var(--ops);}
+  .sim-step-label{font-size:10px; color:var(--text-faint); text-align:center; line-height:1.3; max-width:74px;}
+  .sim-step.done .sim-step-dot{background:var(--dev); border-color:var(--dev); box-shadow:0 0 6px rgba(61,220,151,.6);}
+  .sim-step.done .sim-step-label{color:var(--text);}
+  .sim-step.current .sim-step-dot{background:var(--sec); border-color:var(--sec); box-shadow:0 0 0 5px rgba(167,139,250,.18); transform:scale(1.2);}
+  .sim-step.current.gate .sim-step-dot{transform:rotate(45deg) scale(1.2);}
+  .sim-step.current .sim-step-label{color:var(--sec); font-weight:600;}
+  .sim-step.blocked .sim-step-dot{background:#ef4444; border-color:#ef4444; box-shadow:0 0 8px rgba(239,68,68,.6);}
+  .sim-step.blocked .sim-step-label{color:#ef4444; font-weight:600;}
+  .sim-connector{flex:0 0 14px; height:2px; background:var(--border);}
+  .sim-connector.done{background:var(--dev);}
+  .sim-controls{display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+  .sim-btn{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim); background:var(--panel-3); border:1px solid var(--border-light); border-radius:6px; padding:8px 16px; cursor:pointer; transition:border-color .15s, color .15s;}
+  .sim-btn:hover{border-color:var(--text-dim); color:var(--text);}
+  .sim-btn.primary{color:var(--dev); border-color:var(--dev);}
+  .sim-btn:disabled{opacity:.4; cursor:not-allowed;}
+  .sim-log{background:var(--panel-3); border:1px solid var(--border); border-radius:8px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:11.8px; line-height:1.9; height:180px; overflow-y:auto; display:flex; flex-direction:column;}
+  .sim-log-line{color:var(--text-dim); white-space:pre-wrap;}
+  .sim-log-line.ok{color:var(--dev);}
+  .sim-log-line.warn{color:var(--ops);}
+  .sim-log-line.fail{color:#ef4444;}
+  .sim-log-line.info{color:var(--text-faint); font-style:italic;}
+  .sim-log-empty{color:var(--text-faint);}
+  @media (max-width:600px){
+    .sim-step{min-width:50px;} .sim-step-label{max-width:56px; font-size:9px;}
+  }
+</style>
+</head>
+<body>
+<div class="window">
+  <div class="titlebar">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span class="titlebar-path">~/devsecops/interview-prep.sh</span>
+  </div>
+  <div class="content">
+
+    <div class="prompt">./run-pipeline.sh --role=devops-engineer --target=devsecops<span class="cursor"></span></div>
+    <h1>DevOps → DevSecOps interview prep</h1>
+    <div class="subtitle">For any DevOps engineer moving toward a DevSecOps-focused role · generic / foundational mock interview</div>
+
+    <div class="infobox">
+      <h3>// before you walk in</h3>
+      <p>DevSecOps-focused roles — especially at application security consultancies and in regulated industries (banking, government, fintech) — usually center on the same shape of work: <b>SSDLC framework design, threat modeling, secure code review,</b> and <b>DevSecOps pipeline integration</b>, delivered around <b>SAST, DAST, SCA, IAST,</b> and a <b>triage/false-positive workflow</b>.</p>
+      <p>Many of these teams standardize on <span class="highlight">Fortify</span> and/or <span class="highlight">Black Duck</span> as their commercial AST stack (between the two, SAST/SCA/DAST/IAST are all covered), alongside Azure DevOps, HashiCorp Vault, JFrog Artifactory, and Kubernetes/OpenShift security basics — so this guide keeps its commercial-tool examples anchored to those two, since they're the vendors most likely to come up by name in this kind of interview.</p>
+      <p><b>What this means going in:</b> expect focus on SSDLC concepts, threat modeling maturity, and general fluency with SAST/DAST/SCA/IAST tooling. Deep CI/CD engineering depth usually matters less than showing where security fits in the pipeline and speaking intelligently about triage, gates, and SDLC governance — worth checking which specific tools <i>your</i> target company actually uses beforehand (job posting, LinkedIn, case studies) and swapping in their names wherever this guide says "Fortify" or "Black Duck."</p>
+    </div>
+
+    <!-- ============ ACRONYM GLOSSARY ============ -->
+    <div class="glossary-wrap" id="glossary">
+      <div class="glossary-head">
+        <h3>// acronym cheat sheet — read this first</h3>
+        <span class="glossary-sub">Coming from a DevOps background — these shortcuts get used constantly in AppSec-world conversations</span>
+      </div>
+      <div class="glossary-grid">
+        <div class="gcard"><div class="term">SAST</div><div class="full"><b>Static</b> Application Security Testing</div><div class="purpose">scans source code, no execution — pre-build</div></div>
+        <div class="gcard"><div class="term">DAST</div><div class="full"><b>Dynamic</b> Application Security Testing</div><div class="purpose">attacks a running app from outside — black-box</div></div>
+        <div class="gcard"><div class="term">IAST</div><div class="full"><b>Interactive</b> Application Security Testing</div><div class="purpose">agent inside the app during real testing — SAST+DAST</div></div>
+        <div class="gcard"><div class="term">SCA</div><div class="full">Software <b>Composition</b> Analysis</div><div class="purpose">scans open-source/3rd-party dependencies for CVEs</div></div>
+        <div class="gcard"><div class="term">SBOM</div><div class="full">Software <b>Bill of Materials</b></div><div class="purpose">the inventory list of every component/version used</div></div>
+        <div class="gcard"><div class="term">ASPM</div><div class="full">Application Security <b>Posture Management</b></div><div class="purpose">correlates/dedupes findings from all scanners in one view</div></div>
+        <div class="gcard"><div class="term">SSDLC</div><div class="full"><b>Secure</b> Software Development Life Cycle</div><div class="purpose">security embedded in every SDLC phase, not just at the end</div></div>
+        <div class="gcard"><div class="term">STRIDE</div><div class="full">Spoof/Tamper/Repudiate/Info-leak/DoS/Elevate</div><div class="purpose">threat modeling category checklist</div></div>
+        <div class="gcard"><div class="term">IaC</div><div class="full"><b>Infrastructure</b> as Code</div><div class="purpose">infra defined in files (Terraform/Ansible) — scannable pre-deploy</div></div>
+        <div class="gcard"><div class="term">SIEM</div><div class="full">Security Information &amp; Event Management</div><div class="purpose">central log/alert correlation — e.g. Sentinel</div></div>
+        <div class="gcard"><div class="term">IAM</div><div class="full">Identity &amp; Access Management</div><div class="purpose">who can do what to which cloud resource</div></div>
+        <div class="gcard"><div class="term">mTLS</div><div class="full"><b>Mutual</b> TLS</div><div class="purpose">both sides of a connection prove identity + encrypt</div></div>
+        <div class="gcard"><div class="term">SLSA</div><div class="full">Supply-chain Levels for Software Artifacts</div><div class="purpose">framework for proving a build wasn't tampered with</div></div>
+        <div class="gcard"><div class="term">Fortify SSC</div><div class="full">Fortify <b>Software Security Center</b></div><div class="purpose">Fortify's dashboard that aggregates its own scan results</div></div>
+        <div class="gcard"><div class="term">SRM</div><div class="full">Black Duck <b>Software Risk Manager</b></div><div class="purpose">ASPM — correlates findings from 150+ tools, not just Black Duck's</div></div>
+        <div class="gcard"><div class="term">Polaris</div><div class="full">Black Duck unified <b>SaaS engine</b> platform</div><div class="purpose">runs Coverity+SCA+Seeker together; feeds results into SRM</div></div>
+        <div class="gcard"><div class="term">GitOps</div><div class="full">Git as the <b>source of truth</b> for deployment</div><div class="purpose">a controller (ArgoCD) syncs cluster state to match Git</div></div>
+        <div class="gcard"><div class="term">CI/CD</div><div class="full"><b>Continuous</b> Integration / Delivery</div><div class="purpose">automated build→test→deploy pipeline, defined as code</div></div>
+      </div>
+    </div>
+
+    <!-- ============ INTERACTIVE DIAGRAM ============ -->
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:var(--dev)"></span>DEV</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--sec)"></span>SEC</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--ops)"></span>OPS</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--ops-dim);border:1px solid var(--ops)"></span>GATE</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--text-faint)"></span>checkpoint</div>
+    </div>
+    <div class="pipeline-wrap" id="pipelineWrap">
+      <div class="pipeline" id="pipeline"><div class="track"><div class="track-fill"></div></div></div>
+      <div class="overlay-layer" id="overlayLayer"></div>
+      <svg class="feedback-svg" id="feedbackSvg"><path id="feedbackPath" class="feedback-path" fill="none"/></svg>
+    </div>
+    <div id="detailPanel"></div>
+    <div class="diagram-footnote">a finding surfaced in Monitor feeds straight back into Plan — see the feedback arc above the row</div>
+
+    <hr class="divider">
+
+    <!-- ============ PIPELINE SIMULATOR ============ -->
+    <div class="sim-head">
+      <h2>// commit-to-production simulator</h2>
+      <div class="sim-scenario">
+        <button class="sim-scenario-btn active" data-scenario="happy" id="btnHappy">happy path</button>
+        <button class="sim-scenario-btn" data-scenario="blocked" id="btnBlocked">blocked path</button>
+      </div>
+    </div>
+    <div class="sim-sub">Trace one code change through every real checkpoint, from a local commit to production monitoring — including what happens when a gate actually blocks it.</div>
+
+    <div class="sim-zones" id="simZones"></div>
+
+    <div class="sim-controls">
+      <button class="sim-btn primary" id="simPlay">▶ play</button>
+      <button class="sim-btn" id="simStep">step →</button>
+      <button class="sim-btn" id="simReset">↺ reset</button>
+    </div>
+
+    <div class="sim-log" id="simLog"><div class="sim-log-line sim-log-empty">$ press play to trace a commit through the pipeline_</div></div>
+
+    <hr class="divider">
+
+    <div class="nav-head">
+      <h2>// jump to section</h2>
+      <button class="toggle-btn" onclick="toggleAll()">expand all</button>
+    </div>
+    <div class="navgroup">
+      <div class="navgroup-label">Security 101 (read this if coming from pure DevOps)</div>
+      <div class="pills">
+        <a class="pill sec" href="#sec-vocab">Vulnerability, finding, triage, false positive</a>
+        <a class="pill sec" href="#sec-cve">CVE / CWE / CVSS</a>
+        <a class="pill sec" href="#sec-owasp10">OWASP Top 10</a>
+        <a class="pill sec" href="#sec-boxtesting">Black / grey / white box testing</a>
+        <a class="pill sec" href="#sec-tools">Common security tools</a>
+        <a class="pill sec" href="#sec-principles">Core principles (CIA, AuthN vs AuthZ)</a>
+      </div>
+    </div>
+    <div class="navgroup">
+      <div class="navgroup-label">Web application pentesting</div>
+      <div class="pills">
+        <a class="pill sec" href="#pentest-xss">XSS</a>
+        <a class="pill sec" href="#pentest-sqli">SQL injection</a>
+        <a class="pill sec" href="#pentest-csrf">CSRF</a>
+        <a class="pill sec" href="#pentest-scenario">Scenario: login/register/forgot-password</a>
+      </div>
+    </div>
+    <div class="navgroup">
+      <div class="navgroup-label">Fundamentals</div>
+      <div class="pills">
+        <a class="pill dev" href="#git">Git</a>
+        <a class="pill dev" href="#sdlc">SDLC</a>
+        <a class="pill sec" href="#ssdlc">SSDLC</a>
+        <a class="pill sec" href="#devops-vs-devsecops">DevOps vs DevSecOps</a>
+      </div>
+    </div>
+    <div class="navgroup">
+      <div class="navgroup-label">Risk &amp; threat modeling</div>
+      <div class="pills">
+        <a class="pill sec" href="#risk-initial">Initial vs application risk assessment</a>
+        <a class="pill sec" href="#risk-threat">Risk assessment vs threat modeling</a>
+        <a class="pill sec" href="#stride">STRIDE &amp; methods</a>
+        <a class="pill sec" href="#tm-tools">Threat modeling tools</a>
+        <a class="pill sec" href="#tm-register">Scenario: register/email function</a>
+        <a class="pill sec" href="#tm-login">Scenario: login function</a>
+      </div>
+    </div>
+    <div class="navgroup">
+      <div class="navgroup-label">CI/CD engineering</div>
+      <div class="pills">
+        <a class="pill dev" href="#cicd">Pipeline / CI/CD</a>
+        <a class="pill dev" href="#cicd-tools">CI/CD tools &amp; Tekton</a>
+        <a class="pill dev" href="#cicd-stages">CI/CD stages</a>
+        <a class="pill dev" href="#runners">Runners / agents</a>
+        <a class="pill dev" href="#pr-gate">PR &amp; branch protection</a>
+        <a class="pill sec" href="#gates">Quality gate vs security gate</a>
+        <a class="pill dev" href="#ticketing">Ticketing integration</a>
+      </div>
+    </div>
+    <div class="navgroup">
+      <div class="navgroup-label">DevSecOps tooling</div>
+      <div class="pills">
+        <a class="pill sec" href="#tools-overview">Tools overview</a>
+        <a class="pill sec" href="#sast">SAST</a>
+        <a class="pill sec" href="#sca">SCA / SBOM</a>
+        <a class="pill sec" href="#dast">DAST</a>
+        <a class="pill sec" href="#iast">IAST</a>
+        <a class="pill sec" href="#aspm">ASPM / dashboards</a>
+        <a class="pill sec" href="#tool-table">Tool reference table</a>
+        <a class="pill sec" href="#supply-chain">Supply chain security</a>
+      </div>
+    </div>
+    <div class="navgroup">
+      <div class="navgroup-label">How scans actually run</div>
+      <div class="pills">
+        <a class="pill sec" href="#scan-secret">Secret scan process</a>
+        <a class="pill sec" href="#scan-sast">SAST scan process</a>
+        <a class="pill sec" href="#scan-dast">DAST scan process</a>
+        <a class="pill sec" href="#scan-iast">IAST scan process</a>
+        <a class="pill sec" href="#scan-sca">SCA scan process</a>
+      </div>
+    </div>
+    <div class="navgroup">
+      <div class="navgroup-label">Cloud &amp; infrastructure</div>
+      <div class="pills">
+        <a class="pill ops" href="#iac">IaC scanning</a>
+        <a class="pill ops" href="#docker">Docker &amp; registry</a>
+        <a class="pill ops" href="#docker-encryption">Container network encryption</a>
+        <a class="pill ops" href="#service-mesh">Service mesh (Istio)</a>
+        <a class="pill ops" href="#vault">Secret management (Vault)</a>
+        <a class="pill ops" href="#cloud-aws">AWS / IAM</a>
+        <a class="pill ops" href="#cloud-multitenant">Multi-tenant security</a>
+        <a class="pill ops" href="#azure-sentinel">Azure Sentinel &amp; log tooling</a>
+        <a class="pill ops" href="#gitops">Terraform / Ansible / ArgoCD</a>
+      </div>
+    </div>
+    <div class="navgroup">
+      <div class="navgroup-label">Advanced topics (2026 roadmap)</div>
+      <div class="pills">
+        <a class="pill sec" href="#adv-k8s">Kubernetes security &amp; cluster hardening</a>
+        <a class="pill sec" href="#adv-zerotrust">Zero Trust &amp; identity</a>
+        <a class="pill sec" href="#adv-signing">Image/artifact signing (Cosign, SLSA, Rekor)</a>
+        <a class="pill sec" href="#adv-compliance">Compliance as code</a>
+        <a class="pill sec" href="#adv-trivy">Trivy — capabilities &amp; limits</a>
+        <a class="pill sec" href="#adv-invicti">Invicti clarified</a>
+        <a class="pill sec" href="#adv-ai-threats">AI/ML security &amp; LLM threats</a>
+        <a class="pill sec" href="#adv-ai-pipeline">AI/LLM in the DevSecOps pipeline</a>
+        <a class="pill sec" href="#adv-ai-scanning">Scanning LLM models &amp; apps</a>
+      </div>
+    </div>
+    <div class="navgroup">
+      <div class="navgroup-label">Program maturity</div>
+      <div class="pills">
+        <a class="pill sec" href="#gap-assessment">What's missing? Gap assessment &amp; maturity models</a>
+      </div>
+    </div>
+    <div class="navgroup">
+      <div class="navgroup-label">Closing</div>
+      <div class="pills">
+        <a class="pill" href="#closing">Behavioral angle</a>
+        <a class="pill" href="#quickfire">Quick-fire recall</a>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="infobox" style="border-left-color:var(--sec);">
+      <h3>// start here if security isn't second nature yet</h3>
+      <p>The rest of this guide assumes fluency with terms like "finding," "false positive," or "OWASP Top 10" — the everyday vocabulary of an AppSec shop. Coming from DevOps, that vocabulary isn't automatic yet, so this section covers it first. It's the difference between sounding like someone who's used a scanner and someone who's only ever configured one.</p>
+    </div>
+
+    <div class="topic sec" id="sec-vocab">
+      <div class="topic-head"><span class="topic-num">101</span><h2>Vulnerability, finding, triage, false positive</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What's the difference between a "vulnerability," a "finding," and a "false positive"?</summary>
+        <div class="answer">
+          <ul>
+            <li><b>Vulnerability</b> — an actual flaw or weakness in a system, application, or configuration that could genuinely be exploited to cause harm. This exists whether or not anyone has found it yet.</li>
+            <li><b>Finding</b> — what a scanner (or a human reviewer) reports. It's a <i>claim</i> that a vulnerability exists at a specific location. Every vulnerability that gets reported is a finding, but not every finding is a real vulnerability.</li>
+            <li><b>False positive</b> — a finding that claims a vulnerability exists, but on closer inspection it doesn't (the code path is unreachable, the input is already sanitized elsewhere, the scanner misunderstood the framework's behavior). This is the single biggest daily friction point in AppSec — which is exactly why "triaging" exists as its own paid service line at many AppSec consultancies.</li>
+            <li><b>False negative</b> — the more dangerous, quieter opposite: a real vulnerability that no tool flagged at all. This is why no single scan type is treated as complete coverage.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="qa">
+        <summary>What does "triage" actually mean in this context, and what does the process look like?</summary>
+        <div class="answer">Triage is the step between "a scanner produced 200 findings" and "here's what the developer actually needs to act on." It means: confirm whether each finding is a true or false positive, deduplicate the same underlying issue reported by multiple scanners, assign a real-world severity (not just the tool's default score — factoring in exploitability and exposure), and route the confirmed ones to the right owner with the right priority. Manual triage doesn't scale past a handful of findings a day, which is why ASPM tools (DefectDojo, SRM, Fortify SSC) exist to automate most of it.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="sec-cve">
+      <div class="topic-head"><span class="topic-num">101</span><h2>CVE, CWE, and CVSS</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What's the difference between a CVE, a CWE, and a CVSS score?</summary>
+        <div class="answer">
+          A simple analogy: <b>CWE is the crime category, CVE is the police report for one specific incident, CVSS is how serious that incident was.</b>
+          <ul>
+            <li><b>CWE</b> (Common Weakness Enumeration) — a catalog of general classes of software weakness (e.g. <code>CWE-89: SQL Injection</code>, <code>CWE-79: XSS</code>). It describes the <i>type</i> of flaw, maintained by MITRE.</li>
+            <li><b>CVE</b> (Common Vulnerabilities and Exposures) — a unique ID for one specific, publicly known vulnerability in one specific product/version (e.g. a particular flaw in a particular version of a library). This is what SCA tools match your dependencies against.</li>
+            <li><b>CVSS</b> (Common Vulnerability Scoring System) — the numeric severity score (0–10) for a given CVE, based on factors like attack complexity, privileges required, and impact. Bands: <b>Critical</b> 9.0–10, <b>High</b> 7.0–8.9, <b>Medium</b> 4.0–6.9, <b>Low</b> 0.1–3.9.</li>
+          </ul>
+          A raw CVSS score alone doesn't decide remediation order — a Critical on an isolated internal system can matter less than a High on an internet-facing one; this is exactly the exploitability + exposure context that triage is supposed to add.
+        </div>
+        <div class="ref">Reference: MITRE CVE/CWE programs, FIRST.org CVSS specification.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="sec-owasp10">
+      <div class="topic-head"><span class="topic-num">101</span><h2>OWASP Top 10</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What is the OWASP Top 10, and what's actually on the current list?</summary>
+        <div class="answer">
+          It's the industry-standard, community/data-driven list of the most critical web application security risks, published by the OWASP Foundation. It's an <i>awareness list</i>, not a compliance framework — but nearly every SAST/DAST tool maps its rules back to it. <b>OWASP released an updated 2025 list in January 2026</b> — the first update since 2021 — so it's worth knowing the current shape rather than the older one:
+          <ul>
+            <li><b>A01 Broken Access Control</b> — now also absorbs SSRF (previously its own category).</li>
+            <li><b>A02 Security Misconfiguration</b> — jumped from #5 in 2021 to #2, reflecting how much risk comes from cloud/config drift rather than code bugs.</li>
+            <li><b>A03 Software Supply Chain Failures</b> — brand new category: dependency confusion, malicious packages, compromised CI/CD.</li>
+            <li><b>A04 Cryptographic Failures</b> (previously "Sensitive Data Exposure")</li>
+            <li><b>A05 Injection</b> (SQLi, command injection, etc.)</li>
+            <li><b>A06 Insecure Design</b> — missing threat modeling, flawed architecture, not just implementation bugs.</li>
+            <li><b>A07 Authentication Failures</b></li>
+            <li><b>A08 Software and Data Integrity Failures</b></li>
+            <li><b>A09 Security Logging and Alerting Failures</b> (renamed from "...and Monitoring")</li>
+            <li><b>A10 Mishandling of Exceptional Conditions</b> — new category: poor error handling, unsafe fallbacks, leaking stack traces.</li>
+          </ul>
+          Worth mentioning in an interview: naming that the list was just refreshed (and that supply chain failures now have their own category) signals current awareness rather than reciting the 2021 version from memory.
+        </div>
+        <div class="ref">Reference: owasp.org/Top10/2025.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="sec-boxtesting">
+      <div class="topic-head"><span class="topic-num">101</span><h2>Black box, grey box, white box testing</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What do black box, grey box, and white box mean, and which scan types map to each?</summary>
+        <div class="answer">
+          These describe how much internal knowledge the tester/tool has of the system under test:
+          <ul>
+            <li><b>White box</b> — full internal visibility: source code, architecture, credentials. <b>SAST</b> is white box — it reads the source directly.</li>
+            <li><b>Black box</b> — zero internal knowledge, tested purely from the outside like a real attacker would. <b>DAST</b> is black box — it only sees the running application's external behavior.</li>
+            <li><b>Grey box</b> — partial knowledge: some internal visibility combined with external testing. <b>IAST</b> is grey box — it has source-level visibility <i>and</i> observes real external test traffic simultaneously, which is exactly why it earns the "combines SAST + DAST" description.</li>
+          </ul>
+          This is also standard vocabulary in manual penetration testing engagements, not just automated scanning — a pentester might be explicitly scoped for a black-box (no credentials, external only) or grey-box (given a low-privilege test account) engagement.
+        </div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="sec-tools">
+      <div class="topic-head"><span class="topic-num">101</span><h2>Common security tools to recognize by name</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>Beyond the SAST/DAST/SCA vendor names already covered, what general security tools should I at least recognize on sight?</summary>
+        <div class="answer">
+          <ul>
+            <li><b>Burp Suite</b> — the industry-standard tool for manual and semi-automated web application penetration testing; a security engineer intercepts and manipulates HTTP requests directly. Distinct from ZAP mainly in maturity and manual-testing workflow depth — most professional pentesters use Burp Suite Pro day to day.</li>
+            <li><b>Nmap</b> — network/port scanner; discovers what hosts and services are reachable on a network before anything else happens.</li>
+            <li><b>Metasploit</b> — an exploitation framework used in penetration testing to actually attempt exploiting known vulnerabilities (not just detecting them) in a controlled, authorized engagement.</li>
+            <li><b>Wireshark</b> — packet/network traffic analyzer; inspects raw traffic to see exactly what's being sent, useful for verifying whether traffic is actually encrypted or diagnosing a suspicious connection.</li>
+            <li><b>Nessus / OpenVAS</b> — infrastructure/network vulnerability scanners (as opposed to application-layer SAST/DAST) — check hosts and services for known CVEs and missing patches.</li>
+            <li><b>Kali Linux</b> — a Linux distribution that bundles most of the above (and hundreds more) preinstalled; the default OS most penetration testers work from.</li>
+          </ul>
+          Not expected to be hands-on expert in all of these for a DevSecOps role — but being able to say what each one is <i>for</i>, and where it sits relative to SAST/DAST/SCA, reads as genuine security fluency rather than pipeline-only knowledge.
+        </div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="sec-principles">
+      <div class="topic-head"><span class="topic-num">101</span><h2>Core security principles</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What is the CIA triad?</summary>
+        <div class="answer">The foundational model for what "security" is actually protecting: <b>Confidentiality</b> (only authorized parties can read the data), <b>Integrity</b> (data can't be modified without detection), <b>Availability</b> (the system stays up and usable for legitimate users). Every vulnerability class ultimately threatens one or more of these three — SQL injection threatens confidentiality and integrity; a DoS threatens availability.</div>
+      </details>
+      <details class="qa">
+        <summary>What's the difference between Authentication and Authorization?</summary>
+        <div class="answer"><b>Authentication (AuthN)</b> — proving who you are (logging in, a valid token, MFA). <b>Authorization (AuthZ)</b> — once identity is confirmed, deciding what that identity is actually allowed to do. A huge share of real-world breaches are authorization failures, not authentication ones — someone legitimately logged in, but able to reach data or actions they shouldn't (this is exactly what OWASP's #1 category, Broken Access Control, covers).</div>
+      </details>
+      <details class="qa">
+        <summary>What do "least privilege" and "defense in depth" mean in practice?</summary>
+        <div class="answer"><b>Least privilege</b> — every user, service, and pipeline job gets only the minimum access it needs to do its job, nothing more (this is the same principle behind scoped Vault secrets and ephemeral CI runners covered earlier). <b>Defense in depth</b> — never rely on a single control; layer multiple independent protections (SAST catches it in code, a security gate catches it at release, a WAF catches it at runtime) so one control failing doesn't mean total compromise.</div>
+      </details>
+    </div>
+
+    <hr class="divider">
+
+    <div class="topic sec" id="pentest-xss">
+      <div class="topic-head"><span class="topic-num">PT</span><h2>XSS — Cross-Site Scripting</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What is XSS, and what are the different types?</summary>
+        <div class="answer">
+          XSS lets an attacker inject client-side script into content served to other users, so the victim's browser executes attacker code as if the site itself wrote it — inside the victim's own session, with their own cookies and permissions. Three main types, distinguished by <i>where the payload comes from</i>:
+          <ul>
+            <li><b>Reflected</b> — the payload rides in the current HTTP request (a URL parameter) and is echoed straight back in the response, unsanitized. Requires tricking the victim into clicking a crafted link — it's not persisted anywhere.</li>
+            <li><b>Stored (persistent)</b> — the payload is saved server-side (a comment, a profile field, a support ticket) and served back to <i>every</i> user who later views that page — no crafted link needed, which is why it's ranked more severe than reflected.</li>
+            <li><b>DOM-based</b> — the vulnerability lives entirely in client-side JavaScript: untrusted data from a DOM source (like <code>location.hash</code>) flows into a dangerous DOM sink (like <code>innerHTML</code>) without ever touching the server. Server-side fixes don't protect against this at all.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="qa">
+        <summary>How do you mitigate XSS?</summary>
+        <div class="answer">Context-aware output encoding is the primary defense — encode for the specific context data lands in (HTML body, an HTML attribute, a JavaScript string, a URL); these all have different escaping rules, and most modern frameworks (React, Angular) do this by default unless you deliberately bypass it (e.g. <code>dangerouslySetInnerHTML</code>). For rich text that must allow some HTML, sanitize on output with a library like <b>DOMPurify</b> rather than trying to blacklist tags yourself. Layer a strict, nonce-based <b>Content Security Policy (CSP)</b> on top as defense in depth — it can stop an XSS payload from executing even if one slips through encoding. A WAF that blocks obvious <code>&lt;script&gt;</code> patterns is a weak, easily-bypassed layer, not a substitute for the above.</div>
+      </details>
+      <details class="qa">
+        <summary>How do you actually test for XSS?</summary>
+        <div class="answer">Inject a harmless proof-of-concept payload (classically <code>&lt;script&gt;alert(1)&lt;/script&gt;</code>, or an event-handler variant like <code>"&gt;&lt;img src=x onerror=alert(1)&gt;</code> when angle brackets are filtered) into every input — form fields, URL parameters, headers — and check whether it executes unescaped in the response, in the page source for stored XSS, or reaches a dangerous DOM sink for DOM-based XSS. Burp Suite and OWASP ZAP automate a large share of this by fuzzing every input with a library of known payloads; DOM-based XSS is harder to detect automatically because non-URL sources (like <code>document.cookie</code>) and non-HTML sinks (like <code>setTimeout</code>) often need manual source review. An alert box only proves <i>execution</i> — proving real <i>impact</i> means going further, e.g. showing the payload can steal a session cookie or perform an authenticated action.</div>
+        <div class="ref">Reference: OWASP Testing Guide (WSTG-INPV-01/02, WSTG-CLNT-01), OWASP XSS Prevention &amp; DOM-based XSS Prevention Cheat Sheets, PortSwigger Web Security Academy.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="pentest-sqli">
+      <div class="topic-head"><span class="topic-num">PT</span><h2>SQL Injection</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What is SQL injection, and what are the different types?</summary>
+        <div class="answer">
+          SQLi happens when untrusted input is concatenated directly into a SQL query instead of being treated strictly as data, letting an attacker alter the query's logic. Three broad categories, based on <i>how the attacker gets the data out</i>:
+          <ul>
+            <li><b>In-band (classic)</b> — the attacker uses the same channel to launch the attack and see results. <b>Union-based</b> uses the SQL <code>UNION</code> operator to append the attacker's own query results onto the legitimate ones in a single response. <b>Error-based</b> deliberately triggers database error messages to leak schema details (table/column names) from the error text itself.</li>
+            <li><b>Blind / inferential</b> — the application shows no direct data or error, so the attacker infers information purely from behavior. <b>Boolean-based</b> injects a condition that's always true or false and watches whether the response content changes. <b>Time-based</b> injects a conditional <code>SLEEP()</code> and measures whether the response is delayed.</li>
+            <li><b>Out-of-band (OOB)</b> — used when there's no visible response or error at all; relies on the database's ability to make its own outbound DNS/HTTP request (e.g. Oracle's <code>UTL_HTTP</code>, SQL Server's <code>xp_dirtree</code>) to exfiltrate data to a server the attacker controls.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="qa">
+        <summary>How do you mitigate SQL injection?</summary>
+        <div class="answer"><b>Parameterized queries / prepared statements</b> are the primary, correct fix — the query structure and the data are sent to the database separately, so user input can never alter the query's logic no matter what characters it contains. ORM frameworks generally do this by default. Beyond that: apply <b>least privilege</b> to the database account the application uses (it shouldn't have permission to drop tables or read unrelated schemas), validate/allowlist input as a secondary layer, and make sure error handling never surfaces raw database error messages to the end user (which is exactly what error-based SQLi depends on).</div>
+      </details>
+      <details class="qa">
+        <summary>How do you actually test for SQL injection?</summary>
+        <div class="answer">Start simple: inject a single quote (<code>'</code>) into a parameter and see if it breaks the query (a 500 error or a database error message is a strong signal). Then probe systematically: try a boolean pair like <code>' OR '1'='1</code> vs <code>' OR '1'='2</code> and compare whether the response differs (boolean-based); try a payload with <code>SLEEP(5)</code> and see if the response is delayed by ~5 seconds (time-based); try appending a <code>UNION SELECT</code> with a matching column count to see if extra data appears in the response. In practice, this is exactly what automated tools like <b>sqlmap</b> or Burp Suite's active scanner do at scale rather than doing it payload-by-payload by hand — but understanding the manual logic behind each type is what lets you interpret and confirm what the tool reports.</div>
+        <div class="ref">Reference: OWASP SQL Injection Prevention Cheat Sheet, PortSwigger SQL Injection guide.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="pentest-csrf">
+      <div class="topic-head"><span class="topic-num">PT</span><h2>CSRF — Cross-Site Request Forgery</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What is CSRF, and what forms does it take?</summary>
+        <div class="answer">
+          CSRF tricks an already-authenticated victim's browser into submitting a state-changing request (transfer funds, change an email address, delete an account) to a site it's logged into, without the victim intending it — exploiting the fact that browsers automatically attach cookies to requests regardless of which site triggered them. This is the "confused deputy" problem: the server can't tell a genuine user-initiated request from one silently fired by a malicious page the victim happened to visit.
+          <ul>
+            <li><b>Classic CSRF</b> — a malicious page auto-submits a hidden form or image tag pointing at the target site's state-changing endpoint.</li>
+            <li><b>SameSite=Lax bypass variants</b> — since browsers now default cookies to <code>SameSite=Lax</code>, attackers work around it using top-level navigations (a plain link or <code>window.open</code>) if the vulnerable action can be triggered via GET.</li>
+            <li><b>Client-side CSRF</b> — in modern SPAs, the vulnerable component shifts from the server to client-side JavaScript itself, if it builds an authenticated <code>fetch()</code>/XHR request using attacker-influenced data (a URL parameter, <code>postMessage</code>, localStorage).</li>
+          </ul>
+        </div>
+      </details>
+      <details class="qa">
+        <summary>How do you mitigate CSRF?</summary>
+        <div class="answer">Layer multiple defenses rather than relying on just one: the <b>synchronizer token pattern</b> (a unique, unpredictable per-session CSRF token required on every state-changing request) for stateful apps, or <b>double-submit cookies</b> for stateless ones; the <code>SameSite</code> cookie attribute as a strong but not sufficient defense-in-depth layer (Lax still allows some GET-triggered CSRF through top-level navigation); and validating the <code>Origin</code>/<code>Referer</code> header, failing closed if both are absent. Never rely on "just use POST instead of GET" alone — that blocks nothing on its own. Also worth remembering: any XSS vulnerability can be used to defeat CSRF tokens entirely, since a script running in the victim's own origin can simply read the token itself.</div>
+      </details>
+      <details class="qa">
+        <summary>How do you actually test for CSRF?</summary>
+        <div class="answer">Capture a legitimate state-changing request in Burp Suite, then strip out the CSRF token (or the custom header carrying it) and replay it — if the server still accepts it, there's no real protection. If a token is present, also test with a token of identical length but a different value to confirm the server is actually validating it and not just checking for presence. Then check whether <code>SameSite</code> is set and to which value, and whether the endpoint can be triggered via a simple GET request (which would allow a bypass even with Lax cookies).</div>
+        <div class="ref">Reference: OWASP CSRF Prevention Cheat Sheet, PortSwigger CSRF guide, HackTricks CSRF.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="pentest-scenario">
+      <div class="topic-head"><span class="topic-num">PT</span><h2>Scenario — login, register, forgot password</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>As a pentester, you're handed an app with a login page, a registration page, and a "forgot password" flow. Walk me through what you'd actually check.</summary>
+        <div class="answer">
+          These three pages share a common attacker goal — account takeover — so the checks overlap heavily:
+          <ul>
+            <li><b>Username/email enumeration</b> — does the app respond differently for a valid vs. invalid email on login, register, or forgot-password ("this email is already registered" vs. a generic message)? A different response, error message, status code, or even response time leaks which accounts exist — high-value recon for an attacker before a credential-stuffing or targeted attack.</li>
+            <li><b>Brute force / credential stuffing</b> — is there rate limiting, account lockout, or CAPTCHA on the login endpoint? Test by hammering it with repeated attempts.</li>
+            <li><b>Password reset token strength and handling</b> — is the reset token cryptographically random and single-use, or predictable/sequential? Does it expire in a reasonable window? Is it leaked anywhere it shouldn't be (in the URL, logged server-side, sent in a way an attacker on the network could intercept)? Can the token be reused after it's already been consumed?</li>
+            <li><b>Password reset host header / link poisoning</b> — if the reset link is built dynamically from the request's <code>Host</code> header, can it be manipulated to send the victim a reset link pointing at an attacker-controlled domain?</li>
+            <li><b>Mass assignment on registration</b> — does the registration endpoint accept extra, unexpected fields (e.g. <code>role: "admin"</code> or <code>isVerified: true</code>) that shouldn't be client-settable, and does the backend blindly bind them?</li>
+            <li><b>CSRF on password change/reset</b> — is a CSRF token required on the "set new password" or "change password while logged in" actions?</li>
+            <li><b>Missing account lockout notification / no logging</b> — does the legitimate user get notified of a password reset or repeated failed logins? Is the event logged for later investigation?</li>
+          </ul>
+          This is essentially STRIDE and the OWASP Top 10's Authentication Failures category applied directly to one specific, high-value part of the app — which is exactly the kind of question meant to test whether threat categories can be applied to a concrete page, not just recited abstractly.
+        </div>
+      </details>
+    </div>
+
+    <hr class="divider">
+
+    <div class="topic dev" id="git">
+      <div class="topic-head"><span class="topic-num">GIT</span><h2>Git as version control</h2><span class="topic-tag">dev</span></div>
+      <details class="qa">
+        <summary>Walk me through your typical Git workflow — branching, merging, resolving conflicts.</summary>
+        <div class="answer">Feature-branch workflow — branch off <code>main</code>/<code>develop</code>, commit small logical changes, open a merge/pull request, resolve conflicts locally with <code>git merge</code> or <code>git rebase</code>, then squash or merge after review. Mention <code>git log</code>, <code>git diff</code>, <code>git blame</code> for investigating history, and <code>git stash</code> for context-switching.</div>
+      </details>
+      <details class="qa">
+        <summary>Why does Git matter in a DevSecOps pipeline specifically (not just DevOps)?</summary>
+        <div class="answer">Git is the first security control point. Secret scanning at commit/push time catches hardcoded credentials before they ever reach a remote repo — commonly done with <b>gitleaks</b> or <b>TruffleHog</b>, either as a local pre-commit hook or as a pre-built <b>GitHub Actions</b> step (e.g. <code>gitleaks/gitleaks-action</code> or <code>trufflesecurity/trufflehog</code> action) that runs automatically on every push/PR without custom scripting. Branch protection rules and mandatory code review enforce the "shift-left" principle. Commit signing (GPG/Sigstore) supports software supply chain integrity.</div>
+        <div class="ref">Reference: OWASP DevSecOps Guideline — "shift left" principles.</div>
+      </details>
+    </div>
+
+    <div class="topic dev" id="sdlc">
+      <div class="topic-head"><span class="topic-num">SDLC</span><h2>SDLC</h2><span class="topic-tag">dev</span></div>
+      <details class="qa">
+        <summary>What is SDLC and what are its phases?</summary>
+        <div class="answer">The structured process for building software: <b>Planning → Requirements → Design → Development → Testing → Deployment → Maintenance</b>. Traditionally security was a separate, late-stage gate (often just before release) — which is exactly what SSDLC and DevSecOps were created to fix.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="ssdlc">
+      <div class="topic-head"><span class="topic-num">SSDLC</span><h2>SSDLC (secure SDLC)</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What is SSDLC and how is it different from plain SDLC?</summary>
+        <div class="answer">
+          Embeds security activities <i>into every phase</i> of the SDLC rather than testing at the end:
+          <ul>
+            <li>Planning → security requirements, compliance mapping</li>
+            <li>Design → threat modeling</li>
+            <li>Development → secure coding standards + SAST</li>
+            <li>Testing → DAST / IAST / SCA</li>
+            <li>Deployment → configuration hardening, IaC scanning</li>
+            <li>Maintenance → continuous monitoring, patching</li>
+          </ul>
+          Frameworks to name-drop: <b>NIST SSDF</b>, <b>OWASP SAMM</b>, <b>BSIMM</b>. "Build an SSDLC framework" is a common service offering at AppSec consultancies, so expect this almost verbatim.
+        </div>
+        <div class="ref">Reference: NIST SP 800-218 (SSDF), OWASP SAMM.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="risk-initial">
+      <div class="topic-head"><span class="topic-num">RISK</span><h2>Initial risk assessment vs. application risk assessment</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What's the difference between an "Initial Risk Assessment" and an "Application Risk Assessment"?</summary>
+        <div class="answer">
+          <b>Initial risk assessment:</b> a lightweight, early-stage triage — usually done at project intake or design phase — that classifies the app's risk tier (High/Medium/Low) based on data sensitivity, exposure, and business criticality. It decides <i>how much security rigor</i> the rest of the SDLC needs (a full threat model and pentest, or just a baseline scan).<br><br>
+          <b>Application risk assessment:</b> a comprehensive, application-specific, ongoing evaluation of the risks that initial assessment flagged — likelihood × impact scoring, existing controls, residual risk, and remediation/risk-acceptance decisions. It's iterative and revisited throughout the SDLC and in production, scoped to that specific application's architecture and data flows.<br><br>
+          One-liner: <i>"Initial risk assessment scopes how much security an application needs; application risk assessment is the ongoing, application-specific process of measuring and treating that risk."</i>
+        </div>
+        <div class="ref">Reference: NIST SP 800-30, ISO 27005.</div>
+      </details>
+      <details class="qa">
+        <summary>What if there's no workflow, data flow diagram, documentation, or architecture yet — just a business idea? How do you do an initial risk assessment then?</summary>
+        <div class="answer">This is actually the normal starting point for initial risk assessment, not an edge case — at the idea stage there's nothing to diagram yet. Instead of analyzing artifacts, it's done through a short, structured <b>intake questionnaire</b> that scopes risk from business-level answers alone:
+          <ul>
+            <li>What data will this handle? (public info vs. PII vs. payment data vs. health data — data sensitivity is the single biggest driver of risk tier)</li>
+            <li>Who's the user base, and is it internet-facing, internal-only, or B2B?</li>
+            <li>Does it involve authentication, payments, or third-party/vendor integrations?</li>
+            <li>What regulatory scope does that trigger? (GDPR, PCI DSS, HIPAA, local data-residency law)</li>
+            <li>What's the business criticality if it's compromised or unavailable?</li>
+          </ul>
+          These answers alone are enough to assign a High/Medium/Low risk tier and decide how much SSDLC rigor applies once real design work starts — a Low-tier internal tool might just need a baseline SAST/SCA scan later, while a High-tier tier public-facing payment feature gets a mandatory design-phase threat model and a pentest before launch. This is sometimes formalized as a "Rapid Risk Assessment" — fast, checklist-driven, and revisited once real architecture exists.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="risk-threat">
+      <div class="topic-head"><span class="topic-num">RISK</span><h2>Application risk assessment vs. threat modeling</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>How is an Application Risk Assessment different from Threat Modeling?</summary>
+        <div class="answer">
+          <b>Application risk assessment</b> is asset/business-driven: "What could go wrong with this app, how likely, how bad, is it acceptable?" Broad, often compliance-oriented.<br><br>
+          <b>Threat modeling</b> is architecture/design-driven: "Given this system's data flows and trust boundaries, what are the concrete attack paths, and what controls mitigate each?" Technical, structured, per-application.<br><br>
+          Framing: <i>Risk assessment answers "should we worry?" — threat modeling answers "worry about what, exactly, and how do we stop it?"</i>
+        </div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="stride">
+      <div class="topic-head"><span class="topic-num">TM</span><h2>Threat modeling methods</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>Where does threat modeling actually happen in the SDLC, and when should it be triggered?</summary>
+        <div class="answer">Primarily at the <b>design phase</b> — after requirements are known but before code is written, while the architecture is still cheap to change. But it isn't a one-time checkbox: it should be re-triggered whenever the attack surface meaningfully changes — a new feature that touches sensitive data, a new external integration or trust boundary, a significant architecture change, or a new authentication/authorization flow. Best practice is a lightweight initial pass at design time for every feature, with a deeper session reserved for high-risk features (the ones an initial risk assessment already flagged as High tier).</div>
+      </details>
+      <details class="qa">
+        <summary>Name a threat modeling methodology and explain it.</summary>
+        <div class="answer">
+          <b>STRIDE</b> (Microsoft) — categorizes threats by type:
+          <ul>
+            <li><b>S</b>poofing – impersonating identity</li>
+            <li><b>T</b>ampering – modifying data/code</li>
+            <li><b>R</b>epudiation – denying an action occurred</li>
+            <li><b>I</b>nformation disclosure – exposing data</li>
+            <li><b>D</b>enial of service – degrading availability</li>
+            <li><b>E</b>levation of privilege – gaining unauthorized access</li>
+          </ul>
+          Applied per data-flow-diagram element to systematically surface threats. Also worth naming: <b>PASTA</b> (risk-centric, 7 stages, ties to business impact), <b>DREAD</b> (scoring model), <b>LINDDUN</b> (privacy-focused).
+        </div>
+        <div class="ref">Reference: Microsoft SDL Threat Modeling, OWASP Threat Modeling Cheat Sheet.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="tm-tools">
+      <div class="topic-head"><span class="topic-num">TM</span><h2>Threat modeling tools</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What tools have you seen used for threat modeling?</summary>
+        <div class="answer">
+          <ul>
+            <li><b>IriusRisk</b> — commercial, automates threat generation from architecture diagrams, maps to countermeasures and compliance frameworks.</li>
+            <li><b>Microsoft Threat Modeling Tool</b> — free, STRIDE-based, diagram-driven.</li>
+            <li><b>OWASP Threat Dragon</b> — free/open source, similar diagram + STRIDE approach.</li>
+            <li><b>pytm</b> — code-as-threat-model (Python), good for CI integration.</li>
+          </ul>
+          Since threat modeling is commonly a named service line at AppSec consultancies, worth showing familiarity with the concept and at least one tool — and being honest if this is an area still being built up.
+        </div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="tm-register">
+      <div class="topic-head"><span class="topic-num">TM</span><h2>Scenario — threat modeling a register/email function</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>Take a "register with email" function. What threats apply, and which model fits best?</summary>
+        <div class="answer">
+          <b>STRIDE</b> is the right fit here — it's a single, well-scoped function with clear trust-boundary crossings, and every STRIDE category maps onto something concrete:
+          <ul>
+            <li><b>Spoofing</b> — registering with someone else's email to impersonate them, or automated bot registration at scale.</li>
+            <li><b>Tampering</b> — mass assignment: sending extra fields in the request body (<code>role: "admin"</code>, <code>isVerified: true</code>) that the backend shouldn't accept from the client but blindly binds anyway.</li>
+            <li><b>Information disclosure</b> — the strongest, most likely threat on this specific function: <b>username/email enumeration</b> — if the response (message, status code, or timing) differs for "email already registered" vs. "registration successful," an attacker can silently map out every valid account on the platform before ever attempting to log in.</li>
+            <li><b>Denial of service</b> — registration spam/bot flooding, or "email bombing" a victim's inbox with verification emails triggered by repeated registration attempts using their address.</li>
+            <li><b>Elevation of privilege</b> — same root cause as the tampering case above (mass assignment), if it lets a new account register with elevated permissions.</li>
+            <li><b>IDOR</b> — less relevant to registration itself (there's no existing resource to reference by ID yet) but becomes directly relevant one step later, at email verification or profile completion, if a verification link or profile ID can be guessed/incremented to affect a different user's account.</li>
+          </ul>
+          <b>The optimal answer:</b> apply STRIDE as the structure, but call out <b>information disclosure via enumeration</b> and <b>tampering via mass assignment</b> as the two threats most likely to actually be present and exploitable on a real registration endpoint — those are the ones worth naming first, with IDOR and DDoS as secondary but still worth checking.
+        </div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="tm-login">
+      <div class="topic-head"><span class="topic-num">TM</span><h2>Scenario — threat modeling a login function</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>Now take the login function. What threats apply, and which model fits best?</summary>
+        <div class="answer">
+          <b>STRIDE</b> again, since login is the single highest-value trust boundary in the entire application — every category applies with real, common examples:
+          <ul>
+            <li><b>Spoofing</b> — the headline threat here: credential stuffing (reusing breached password lists) and brute force against weak or unrestricted login attempts.</li>
+            <li><b>Tampering</b> — manipulating request parameters (a hidden role field, a JWT payload if it isn't properly signature-verified) to escalate privilege post-authentication.</li>
+            <li><b>Repudiation</b> — no logging of login attempts (successful or failed) means no audit trail if an account compromise needs to be investigated later.</li>
+            <li><b>Information disclosure</b> — username enumeration again (a different error for "wrong password" vs. "no such account" — the correct fix is one identical generic message for both), and verbose error messages that leak stack traces or backend details.</li>
+            <li><b>Denial of service</b> — two distinct flavors: flooding the login endpoint itself, and <b>account lockout abuse</b> — an attacker deliberately triggering a victim's own lockout policy by repeatedly failing their login, denying the legitimate user access.</li>
+            <li><b>Elevation of privilege</b> — session fixation (reusing a pre-login session ID after authentication instead of issuing a fresh one) and insufficient authorization checks immediately after a successful login.</li>
+          </ul>
+          <b>The optimal answer:</b> lead with <b>spoofing (credential stuffing/brute force)</b> as the most statistically common real-world attack against any login page, immediately followed by <b>information disclosure (enumeration)</b> since it directly enables the spoofing attack by narrowing down which accounts to target — then round out the answer with the DoS/lockout-abuse case, since it's the one threat unique to login that people most often forget.
+        </div>
+        <div class="ref">Reference: OWASP Authentication Cheat Sheet, OWASP ASVS (Authentication requirements).</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="devops-vs-devsecops">
+      <div class="topic-head"><span class="topic-num">FUND</span><h2>DevOps vs. DevSecOps</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>In one sentence, what's the difference between DevOps and DevSecOps?</summary>
+        <div class="answer">DevOps optimizes for <b>speed and collaboration</b> between Dev and Ops through automation; DevSecOps adds <b>security as a shared, continuous responsibility</b> embedded into every pipeline stage rather than a final gate — "shift security left" without slowing delivery down.</div>
+      </details>
+    </div>
+
+    <div class="topic dev" id="cicd">
+      <div class="topic-head"><span class="topic-num">CI/CD</span><h2>What is a pipeline / CI/CD</h2><span class="topic-tag">dev</span></div>
+      <details class="qa">
+        <summary>Explain CI/CD in your own words.</summary>
+        <div class="answer"><b>CI</b> — developers frequently merge code into a shared repo, triggering automated build + test to catch integration issues early. <b>CD</b> — automatically packaging and (optionally) releasing that validated build to staging/production. A <b>pipeline</b> is the automated sequence of stages (build → test → security scan → deploy) defined as code, so every change goes through the same repeatable, auditable process.</div>
+      </details>
+    </div>
+
+    <div class="topic dev" id="cicd-tools">
+      <div class="topic-head"><span class="topic-num">CI/CD</span><h2>CI/CD tools &amp; Tekton</h2><span class="topic-tag">dev</span></div>
+      <details class="qa">
+        <summary>What CI/CD tools have you worked with, and what else is common in the market?</summary>
+        <div class="answer">
+          Real experience: <b>GitLab CI/CD</b>. Also common, in rough order of enterprise prevalence:
+          <ul>
+            <li><b>Jenkins</b> — the original extensible CI server, plugin-based, self-hosted, master/agent architecture.</li>
+            <li><b>Azure DevOps Pipelines</b> — tightly integrated with Azure Boards/Repos; many similar DevSecOps roles specifically call this out.</li>
+            <li><b>GitLab CI/CD</b> — pipeline-as-code (<code>.gitlab-ci.yml</code>) built directly into the Git platform.</li>
+            <li><b>GitHub Actions</b> — event-driven, YAML workflows, huge marketplace of pre-built actions (including security scanners).</li>
+          </ul>
+        </div>
+      </details>
+      <details class="qa">
+        <summary>What is Tekton, and is it for OpenShift or Kubernetes? How is it different from a "regular" CI/CD tool?</summary>
+        <div class="answer">
+          <b>Tekton</b> is an open source, <b>Kubernetes-native</b> CI/CD framework (a Continuous Delivery Foundation project) — it isn't tied to OpenShift specifically, it runs on any Kubernetes cluster. Pipelines, tasks, and triggers are all defined as Kubernetes <b>Custom Resource Definitions (CRDs)</b>, so a pipeline run is just a pod scheduled by the cluster itself, using the same scaling and resource management as any workload.<br><br>
+          <b>"Managed Tekton" = OpenShift Pipelines</b> — Red Hat's own distribution/product built on top of upstream Tekton, integrated into the OpenShift console, CLI (<code>tkn</code>), and IDE plugins. So: Tekton = the open source engine, OpenShift Pipelines = Red Hat's managed, supported packaging of that engine for OpenShift specifically.<br><br>
+          <b>Difference from a "regular" CI/CD tool</b> (Jenkins, GitLab CI): traditional tools run their own dedicated server/agent infrastructure outside the cluster. Tekton has no separate server at all — the pipeline <i>is</i> Kubernetes resources, so it inherits the cluster's RBAC, scaling, and observability instead of needing a separate one bolted on. Common pairing: <b>Tekton for CI + ArgoCD for CD</b> (GitOps).
+        </div>
+        <div class="ref">Reference: Red Hat OpenShift Pipelines documentation, tekton.dev.</div>
+      </details>
+    </div>
+
+    <div class="topic dev" id="cicd-stages">
+      <div class="topic-head"><span class="topic-num">CI/CD</span><h2>CI/CD stages — DevOps vs. DevSecOps</h2><span class="topic-tag">dev</span></div>
+      <details class="qa">
+        <summary>What are the CI/CD stages in a standard DevOps pipeline?</summary>
+        <div class="answer">Source → Build → Unit test → Package/artifact → Deploy (staging) → Integration test → Deploy (production) → Monitor.</div>
+      </details>
+      <details class="qa">
+        <summary>How does that change for a DevSecOps pipeline?</summary>
+        <div class="answer">Source (<b>secret scan</b>, pre-commit) → Build (<b>SAST</b>) → Package (<b>SCA/SBOM</b>, <b>IaC scan</b>) → Test (<b>DAST</b>, <b>IAST</b>, <b>container image scan</b>) → Release (<b>triage/false-positive review</b>, artifact signing, policy gate) → Deploy (secure config check) → Operate/Monitor (cloud posture, SIEM, runtime protection).<br><br>Good phrase: <i>"Every DevOps stage gets a corresponding security gate — it's the same pipeline, just with security checkpoints layered in, not bolted on at the end."</i></div>
+      </details>
+    </div>
+
+    <div class="topic dev" id="runners">
+      <div class="topic-head"><span class="topic-num">CI/CD</span><h2>CI/CD runners / agents</h2><span class="topic-tag">dev</span></div>
+      <details class="qa">
+        <summary>What is a CI/CD runner or agent, what types exist, and how do you choose between them?</summary>
+        <div class="answer">
+          A <b>runner/agent</b> is the process (often inside a container or VM) that actually executes a pipeline job — checks out code, runs the build/test/scan commands, then reports status back to the CI server.<br><br>
+          <b>Types:</b>
+          <ul>
+            <li><b>Hosted/shared</b> (GitHub-hosted runners, GitLab SaaS runners) — fully managed, zero maintenance, spun up fresh per job. Fast to start, but no access to private/internal networks and less control over the environment.</li>
+            <li><b>Self-hosted</b> (Jenkins agents, GitLab Runner, GitHub self-hosted runner) — you own the infrastructure. Needed when the pipeline must reach internal/on-prem systems, use specific hardware, or meet data-residency/compliance requirements common in banking and government work.</li>
+            <li><b>Ephemeral vs persistent</b> — ephemeral runners (spun up per job, e.g. via a Kubernetes plugin or Docker executor, then destroyed) are preferred for security since nothing persists between jobs — no leftover secrets, no cross-job contamination. Persistent/static agents are simpler to manage but riskier if compromised, since state and credentials can linger.</li>
+          </ul>
+          Security angle: an ephemeral, least-privilege runner is itself a supply-chain control — see the supply chain security section below.
+        </div>
+      </details>
+    </div>
+
+    <div class="topic dev" id="pr-gate">
+      <div class="topic-head"><span class="topic-num">CI/CD</span><h2>Pull requests &amp; branch protection</h2><span class="topic-tag">dev</span></div>
+      <details class="qa">
+        <summary>How do you make sure code only merges after it passes all checks?</summary>
+        <div class="answer">Configure <b>branch protection rules</b> (GitHub/GitLab/Azure Repos) on <code>main</code>: require the pull request to pass all defined <b>required status checks</b> (build, unit tests, SAST, SCA) before the merge button is even enabled, require at least one approving review, and optionally require branches to be up to date before merging. The pipeline reports each check's pass/fail status directly on the PR, so a failing SAST scan blocks the merge exactly the same way a failing unit test would — security becomes a merge blocker, not an afterthought.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="gates">
+      <div class="topic-head"><span class="topic-num">GATE</span><h2>Quality gate vs. security gate</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What's the difference between a quality gate and a security gate, and how do you decide when a scan should pass or block the pipeline?</summary>
+        <div class="answer">
+          A <b>gate</b> is an automated checkpoint in the pipeline with a pre-agreed, documented threshold — the pipeline only continues if the results are within that threshold; otherwise it fails the build.<br><br>
+          <b>Quality gate</b> (e.g. SonarQube quality gate): code-quality metrics — test coverage percentage, code duplication, maintainability rating, number of code smells.<br><br>
+          <b>Security gate</b>: vulnerability-based thresholds from SAST/SCA/DAST/IAST results — for example "block the build if any <b>Critical</b> or unapproved <b>High</b> severity finding exists; Medium/Low findings are logged but don't block." The threshold is agreed <i>in advance</i> with stakeholders (a pre-approved risk-acceptance list for known, tracked exceptions), so the gate is predictable rather than an argument every release.<br><br>
+          This is exactly the kind of policy a dedicated application security triaging service exists to help tune — getting the threshold right so it blocks real risk without drowning teams in false-positive-driven build failures.
+        </div>
+      </details>
+    </div>
+
+    <div class="topic dev" id="ticketing">
+      <div class="topic-head"><span class="topic-num">CI/CD</span><h2>CI/CD integration with ticketing / tracking</h2><span class="topic-tag">dev</span></div>
+      <details class="qa">
+        <summary>How does a pipeline integrate with tools like Jira, ServiceNow, Trello, or Azure DevOps Boards, and what's the use case?</summary>
+        <div class="answer">
+          When a scan (SAST/SCA/DAST) finds a new confirmed issue, the pipeline (often via an ASPM tool — see below) automatically opens a ticket in the team's tracker rather than leaving it buried in a scan report:
+          <ul>
+            <li><b>Jira / Azure DevOps Boards</b> — most common for dev teams; ticket auto-assigned to the code owner (via <code>CODEOWNERS</code> or component mapping), tagged with severity, linked back to the specific commit/file/line.</li>
+            <li><b>ServiceNow</b> — common in larger/regulated enterprises (government/banking client environments in particular) for formal change and incident management, and for feeding security findings into a broader GRC/audit workflow.</li>
+            <li><b>Trello</b> — lighter-weight, more common for smaller teams or informal triage boards.</li>
+          </ul>
+          <b>Use case / flow:</b> scan finds issue → triage (true positive confirmed) → ticket auto-created and assigned to the responsible developer with severity/SLA → developer fixes and closes the PR → tool automatically verifies the fix on rescan and closes the ticket. This is what turns scan output into an actual accountable workflow instead of a report nobody reads.
+        </div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="tools-overview">
+      <div class="topic-head"><span class="topic-num">TOOLS</span><h2>DevSecOps tools — overview</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What categories of security tools exist across the pipeline, and where does each fit?</summary>
+        <div class="answer">SAST (code, pre-build), SCA (dependencies, build), IAST (runtime + code, test), DAST (running app, black-box, test/staging), IaC scanning (Terraform/Ansible/YAML, pre-deploy), container/image scanning (build/registry), ASPM (correlates everything above, release stage onward), and cloud security posture management + SIEM (runtime, operate/monitor).</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="sast">
+      <div class="topic-head"><span class="topic-num">SAST</span><h2>SAST — and custom rules</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What is SAST, and why would you write custom rules?</summary>
+        <div class="answer"><b>Static Application Security Testing</b> analyzes source code or bytecode <i>without executing it</i> to find vulnerabilities like injection flaws, insecure crypto use, or hardcoded secrets — typically at commit/build time.<br><br><b>Custom rules</b> matter because out-of-the-box rulesets generate noise or miss org-specific risks — e.g. flagging a deprecated internal crypto library, or enforcing that DB queries go through a sanitized wrapper. Tuning rules is also how false positives are reduced, which matters directly here since triaging is often its own paid service line for exactly this problem.</div>
+        <div class="ref">Commercial: <b>Fortify SAST</b>, <b>Black Duck Coverity</b>. Open source: SonarQube, Semgrep.</div>
+      </details>
+      <details class="qa">
+        <summary>What's the actual difference between a "custom rule," "tuning," and "sanitizing" in SAST — these get used almost interchangeably.</summary>
+        <div class="answer">
+          They're related but distinct actions:
+          <ul>
+            <li><b>Custom rule</b> — writing a brand-new detection rule from scratch for something the tool has no built-in rule for at all — usually an organization-specific pattern: a proprietary database access layer, an internal auth middleware that every route is supposed to use, a home-grown serialization format. No default rule can catch a violation of a pattern the vendor never knew existed.</li>
+            <li><b>Tuning</b> — adjusting the <i>behavior</i> of a rule that already exists: disabling a rule that's irrelevant to this codebase (e.g. turning off XXE checks for an app with no XML parser at all), changing a default severity, or narrowing a rule's scope so it only fires in the contexts that actually matter here.</li>
+            <li><b>Sanitizing (a.k.a. teaching the tool about a sanitizer)</b> — the most targeted of the three: telling the tool that a <i>specific internal function</i> is a trusted sanitizer, so it stops treating data that passed through that function as still "tainted." Without this, a SAST tool will keep flagging a SQL query as vulnerable even though the input already passed through the team's own validated, safe wrapper function — because the tool has no way of knowing that wrapper is safe unless it's told.</li>
+          </ul>
+          In practice they're used together: write a custom rule to cover a gap, then tune it as false positives surface, then add a sanitizer definition once you identify the specific internal function causing the noise.
+        </div>
+      </details>
+      <details class="qa">
+        <summary>Walk me through how you'd actually go about writing a custom rule, tuning it, and defining a sanitizer.</summary>
+        <div class="answer">
+          Most modern SAST tools (Semgrep is the common example, and GitLab's Advanced SAST analyzer works the same way) expose this through a rule configuration file rather than requiring you to modify the scanner itself:
+          <ul>
+            <li><b>1. Write the custom rule</b> — define, in the tool's rule syntax (Semgrep uses YAML with a pattern-matching DSL), the exact code pattern to flag — e.g. "any call to <code>legacyDbLayer.rawQuery()</code> where the argument isn't wrapped by <code>sanitize()</code> first." You can build and test the pattern in the tool's own rule playground before deploying it.</li>
+            <li><b>2. Tune it</b> — after the first few scans, review what it's flagging: disable it in contexts where it doesn't apply, adjust the severity to match real risk, and narrow the pattern if it's over-matching innocuous code.</li>
+            <li><b>3. Define the sanitizer</b> — most rule engines let you explicitly declare a function as a sanitizer inside the rule definition itself, so the tool's data-flow/taint analysis treats any value that has passed through it as clean and stops tracking it as tainted from that point onward.</li>
+            <li><b>4. Re-scan and repeat</b> — tuning isn't a one-time setup step; track the false-positive rate over time (industry figures put an untuned SAST tool at roughly 30–60% false positives, dropping to 10–20% once genuinely tuned) and revisit rules after major refactors or framework migrations, since that's exactly when a previously-accurate rule starts misfiring again.</li>
+          </ul>
+        </div>
+        <div class="ref">Reference: Semgrep custom rules documentation, GitLab SAST ruleset customization docs, appsecsanta.com SAST false-positive tuning guide.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="sca">
+      <div class="topic-head"><span class="topic-num">SCA</span><h2>SCA and SBOM</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What is SCA, and what is an SBOM?</summary>
+        <div class="answer"><b>Software Composition Analysis</b> scans open-source/third-party dependencies for known CVEs and license risks. An <b>SBOM</b> is the structured, machine-readable inventory of every component/library/version — an "ingredients list." SBOMs are increasingly a compliance requirement (e.g. US Executive Order 14028), and SCA tools are what generate/verify them. Standard format to name: <b>CycloneDX</b> (also SPDX).</div>
+        <div class="ref">Commercial: <b>Black Duck SCA</b> (industry leader — worth emphasizing if the target company is a certified Black Duck service provider). Open source: OWASP Dependency-Check, Dependency-Track.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="dast">
+      <div class="topic-head"><span class="topic-num">DAST</span><h2>DAST</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What is DAST and when do you run it?</summary>
+        <div class="answer">Tests a <i>running</i> application from the outside — black-box, no source access — simulating real attacker behavior (SQLi, XSS, auth bypass) against a live/staging endpoint. Runs later in the pipeline than SAST.</div>
+        <div class="ref">Commercial: <b>Fortify WebInspect</b>, <b>Invicti DAST</b> (proof-based/verified scanning — confirms a finding is truly exploitable rather than a guess, which cuts false positives sharply). Open source: OWASP ZAP, Burp Suite Community.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="iast">
+      <div class="topic-head"><span class="topic-num">IAST</span><h2>IAST</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What is IAST and how is it different from SAST and DAST?</summary>
+        <div class="answer">Combines both worlds — an agent instruments the app <i>from inside</i> during functional/QA testing, seeing real execution paths (like DAST) with source-level precision (like SAST). Lower false-positive rate since it confirms a vulnerability was actually reached/exploited during a real test run.</div>
+        <div class="ref">Commercial: <b>Black Duck Seeker</b> (formerly Synopsys Seeker). Very few strong open source options — mostly a commercial category.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="aspm">
+      <div class="topic-head"><span class="topic-num">ASPM</span><h2>ASPM / centralized management dashboards</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What is ASPM, and what tools would you use to centralize findings from all your scanners?</summary>
+        <div class="answer">
+          <b>Application Security Posture Management (ASPM)</b> sits <i>above</i> individual scanners — it ingests findings from SAST, DAST, SCA, IAST, container, and IaC tools, deduplicates the same issue found by multiple scanners into one entry, prioritizes by real risk (not just raw CVSS), and routes tickets to the right developer. It's the layer that turns "five scanners, five noisy reports" into one prioritized backlog.
+          <ul>
+            <li><b>DefectDojo</b> — open source ASPM/vulnerability management; widely used to aggregate results from many different scanners for free.</li>
+            <li><b>Fortify SSC</b> (Software Security Center) — Fortify's own on-prem aggregation and workflow dashboard for its SAST/DAST results.</li>
+            <li><b>Black Duck SRM</b> (Software Risk Manager, formerly Code Dx) — Black Duck's ASPM platform; correlates findings from 150+ tools (not just Black Duck's own) into one prioritized, deduplicated view with compliance mapping.</li>
+            <li><b>Black Duck Polaris</b> — distinct from SRM: Polaris is the unified <i>SaaS engine platform</i> that runs Coverity (SAST), Black Duck SCA, and Seeker (DAST/IAST) together under one UI; its results typically feed into SRM for cross-tool correlation.</li>
+            <li><b>Invicti ASPM</b> (formerly Kondukto, now merged with Invicti's proof-based DAST) — vendor-agnostic ASPM that connects 100+ scanners and CI/CD systems, distinguished by feeding proof-based DAST results in as verified/exploit-confirmed findings.</li>
+          </ul>
+          Quick way to keep these straight: <b>Polaris = the engines</b> that produce findings, <b>SRM / Fortify SSC / Invicti ASPM / DefectDojo = the dashboards</b> that correlate and prioritize those findings across tools.
+        </div>
+      </details>
+      <details class="qa">
+        <summary>Say a security gate blocks the build with 20 findings. How do you actually automate confirming they're false positives, instead of manually reviewing all 20 every release — is there a way to use AI for this?</summary>
+        <div class="answer">
+          Yes — and this has become a real, mainstream ASPM capability rather than a hypothetical, though it's worth being precise about what the AI is actually doing versus what stays deterministic:
+          <ul>
+            <li><b>The detection engine stays rule-based and deterministic.</b> Nearly every serious vendor (Semgrep, Checkmarx, Invicti, Cycode) is explicit about this: the actual vulnerability detection is still traditional taint/pattern analysis — AI is layered <i>on top</i> for triage, prioritization, and remediation suggestions, not for deciding what counts as a vulnerability in the first place. Treating AI as the detector itself, rather than the triager, is the wrong mental model.</li>
+            <li><b>Reachability analysis does most of the heavy lifting first</b> — before AI even enters the picture, checking whether the vulnerable function is actually called anywhere reachable in your code (not just present in a dependency) is what several tools report as eliminating up to 90%+ of noise on its own, since an unreachable finding is a false positive for practical purposes regardless of what a CVE database says.</li>
+            <li><b>On top of that, AI-driven exploitability triage</b> classifies each remaining finding into a bucket — false positive / acceptable risk / genuinely exploitable — using the code's actual context (is the input really attacker-controlled here, does a sanitizer sit in the path, is this endpoint actually internet-facing). Vendors report this cutting remaining false positives dramatically further.</li>
+            <li><b>Governance stays human</b> — the honest, defensible version of this workflow is AI proposes the classification and a remediation diff, a human (or an already-agreed policy) approves it, and nothing auto-merges without that review trail. That audit trail matters a lot in a regulated, banking/government client context — "the AI decided" is not an acceptable answer in an audit.</li>
+          </ul>
+          <b>Practical answer to give in an interview:</b> tuning custom rules and sanitizers (covered above) is still the first-line defense — get the false-positive rate down before you ever need extra automation. On top of that, reachability analysis filters out the "technically present but unreachable" noise. Only the findings that survive both of those get AI-assisted exploitability triage, with a human still signing off before anything is marked "safe to ignore" — AI speeds up the triage queue, it doesn't replace the accountability for the decision.
+        </div>
+        <div class="ref">Reference: Cycode AI Exploitability Agent, Checkmarx Triage &amp; Remediation Assist, Semgrep reachability analysis, Invicti proof-based scanning documentation.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="tool-table">
+      <div class="topic-head"><span class="topic-num">TOOLS</span><h2>Famous security scan tools — quick reference</h2><span class="topic-tag">sec</span></div>
+      <table class="tools">
+        <tr><th>Category</th><th>Open source</th><th>Commercial (focus)</th></tr>
+        <tr><td>SAST</td><td>SonarQube, Semgrep</td><td><b>Fortify</b>, <b>Black Duck Coverity</b></td></tr>
+        <tr><td>SCA / SBOM</td><td>Dependency-Check, Dependency-Track, CycloneDX</td><td><b>Black Duck SCA</b></td></tr>
+        <tr><td>IAST</td><td>— limited options</td><td><b>Black Duck Seeker</b></td></tr>
+        <tr><td>DAST</td><td>OWASP ZAP, Burp Suite Community</td><td><b>Fortify WebInspect</b>, <b>Invicti DAST</b></td></tr>
+        <tr><td>ASPM / dashboard</td><td>DefectDojo</td><td><b>Black Duck SRM</b>, <b>Fortify SSC</b>, <b>Invicti ASPM</b></td></tr>
+        <tr><td>IaC scan</td><td>Checkov, tfsec</td><td>—</td></tr>
+        <tr><td>Container/image scan</td><td>Trivy</td><td>—</td></tr>
+        <tr><td>Secret scan</td><td>gitleaks, TruffleHog</td><td>—</td></tr>
+      </table>
+      <details class="qa">
+        <summary>If a scanner throws 200 findings on a legacy app, what do you do first?</summary>
+        <div class="answer">Triage — separate true positives from false positives (literally a paid AppSec service line), prioritize by severity + exploitability + exposure (not CVSS score alone), and tune the ruleset so the same noise doesn't repeat next scan. An ASPM tool automates most of this correlation step.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="supply-chain">
+      <div class="topic-head"><span class="topic-num">SUPPLY</span><h2>Supply chain attacks in CI/CD</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What are supply chain attacks in a CI/CD context, and how do you harden the pipeline against them?</summary>
+        <div class="answer">
+          A <b>supply chain attack</b> compromises something the pipeline trusts — a dependency, a build tool, a runner, or the pipeline definition itself — rather than attacking the application code directly. Common patterns: a malicious/typosquatted package pulled in as a dependency, <b>dependency confusion</b> (a public package with the same name as an internal private one gets installed instead), a compromised CI runner used to inject malicious code into a build, or a poisoned base image pulled from an untrusted registry.<br><br>
+          <b>Hardening the pipeline:</b>
+          <ul>
+            <li>Pin dependency versions and use lockfiles; pull from a private, proxied registry (Artifactory/Nexus) rather than public registries directly.</li>
+            <li>Run SCA/SBOM on every build so unexpected new dependencies are visible immediately.</li>
+            <li>Use <b>ephemeral, least-privilege runners</b> (see the runners section) so a compromised job can't persist or affect the next one.</li>
+            <li>Sign commits and artifacts (<b>Sigstore/cosign</b>) and verify signatures before deploy — this is what the <b>SLSA</b> (Supply-chain Levels for Software Artifacts) framework formalizes as build provenance.</li>
+            <li>Enforce branch protection + mandatory review so nobody can push directly to <code>main</code> or modify pipeline YAML unreviewed.</li>
+            <li>Restrict runner network egress so a compromised job can't exfiltrate secrets or call out to an attacker-controlled host.</li>
+          </ul>
+          Referencing SolarWinds or Codecov-style incidents by name (without over-claiming deep expertise) shows awareness that this is a real, not theoretical, threat category.
+        </div>
+        <div class="ref">Reference: SLSA framework (slsa.dev), OWASP CI/CD Security Top 10.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="scan-secret">
+      <div class="topic-head"><span class="topic-num">SCAN</span><h2>How a secret scan actually runs</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>Walk me through, step by step, how a secret scanner actually finds a leaked credential.</summary>
+        <div class="answer">
+          It varies by tool, but in general every secret scanner (gitleaks, TruffleHog, GitHub secret scanning) runs the same broad sequence:
+          <ul>
+            <li><b>1. Ingest the content</b> — not just the current files, but the full Git history: every commit, every branch, every diff, even files that were later deleted. A secret committed and removed two years ago is still sitting in <code>.git</code> history unless the history itself is rewritten.</li>
+            <li><b>2. Chunk it</b> — the tool splits the repository content into manageable pieces (per file, per commit diff) so it can process them in parallel.</li>
+            <li><b>3. Detect candidates, two ways combined:</b>
+              <ul>
+                <li><b>Regex / rule matching</b> — hundreds of known patterns for specific formats: AWS keys start with <code>AKIA</code>, GitHub tokens have their own prefix, private keys start with <code>-----BEGIN PRIVATE KEY-----</code>, database connection strings follow a recognizable shape.</li>
+                <li><b>Entropy analysis</b> — real secrets are close to random, so they have high <b>Shannon entropy</b> (a measure of randomness per character). A string that's high-entropy AND matches a plausible secret shape gets flagged even if it doesn't match any named pattern — this is what catches a custom internal API key with no distinguishing prefix.</li>
+              </ul>
+            </li>
+            <li><b>4. Filter noise</b> — allowlists strip out known-fake values (documentation examples like AWS's own <code>AKIAIOSFODNN7EXAMPLE</code>, test fixtures, placeholder strings).</li>
+            <li><b>5. (Optional) Verify</b> — some tools, notably TruffleHog, go one step further: they take the candidate and make a live API call to the actual provider (e.g. a test call to the Stripe API) to confirm the credential is still active. A live, verified secret is treated as a P0 — confirmed, not just suspected.</li>
+            <li><b>6. Report</b> — commit SHA, file path, line number, a redacted preview of the match, and (if verified) confirmation the credential is actually exploitable right now.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="qa">
+        <summary>Why do some tools verify secrets via a live API call, and what's the tradeoff?</summary>
+        <div class="answer">Regex + entropy tells you a string <i>looks like</i> a secret. Verification tells you it <i>is</i> one — right now. That distinction matters enormously for triage: a scan with 40 "possible" hits nobody has time to check gets ignored; a scan with 2 "confirmed live" hits gets fixed the same day. The tradeoff is that verification requires making real network calls to third-party providers as part of the scan, which needs to be scoped and rate-limited carefully in CI so it doesn't itself look like abuse.</div>
+      </details>
+      <details class="qa">
+        <summary>Where does secret scanning actually run in the pipeline?</summary>
+        <div class="answer">Three places, ideally all three: (1) a <b>pre-commit hook</b> on the developer's machine — fastest feedback, blocks the secret before it's even committed locally; (2) a <b>pre-push / PR check</b> in CI, scanning the diff of the branch; (3) a <b>periodic full-history scan</b> of the whole repository, since secrets committed before scanning was ever set up are still sitting in history until someone finds and rotates them.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="scan-sast">
+      <div class="topic-head"><span class="topic-num">SCAN</span><h2>How a SAST scan actually runs</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>Before it can even analyze anything, how does a SAST tool figure out what language and framework it's actually looking at?</summary>
+        <div class="answer">Mostly the same way a human would glance at a repo: <b>file extensions</b> (<code>.java</code>, <code>.py</code>, <code>.go</code>) and <b>manifest/build files</b> that name the stack explicitly — <code>package.json</code> and framework dependencies for Node/React, <code>pom.xml</code>/<code>build.gradle</code> for Java/Spring, <code>requirements.txt</code>/<code>Pipfile</code> for Python/Django, <code>go.mod</code> for Go. Tools like GitLab SAST literally run a detection pass over the repo first, then select and hand off to the matching language-specific analyzer. This is also why SAST coverage is uneven — a tool is only as good as its support for your specific stack; a generic multi-language scanner often misses framework-specific idioms (e.g. Spring or Rails conventions) that a dedicated single-language scanner (Brakeman for Rails, Bandit for Python) would catch.</div>
+      </details>
+      <details class="qa">
+        <summary>Once the language is identified, what actually happens next — does the tool compile and build the code?</summary>
+        <div class="answer">
+          Depends on the language and the tool:
+          <ul>
+            <li><b>Interpreted languages</b> (Python, JavaScript, Ruby) — the tool typically parses the source text directly into a syntax tree; no compilation needed.</li>
+            <li><b>Compiled languages</b> (Java, C#, C/C++) — some tools need a full or partial <b>build</b> to resolve types, dependencies, and cross-file references accurately, especially for deep semantic analysis; others parse source without building, trading some accuracy for speed and not needing a working build environment in the pipeline.</li>
+            <li><b>Bytecode/binary analysis</b> — some tools (e.g. for Java) can alternatively analyze compiled <code>.class</code>/bytecode or even binaries directly, useful when source isn't available.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="qa">
+        <summary>Does the tool translate everything into some kind of intermediate representation? What does that actually look like?</summary>
+        <div class="answer">
+          Yes — this is the core of how SAST works, regardless of language:
+          <ul>
+            <li><b>Lexical analysis (tokenizing)</b> — the raw text is broken into tokens: keywords, identifiers, operators.</li>
+            <li><b>Syntax analysis (parsing)</b> — tokens are assembled into an <b>Abstract Syntax Tree (AST)</b>, a tree that represents the code's grammatical structure regardless of formatting or whitespace.</li>
+            <li><b>Building further models on top of the AST</b> — a <b>Control Flow Graph (CFG)</b>, mapping every possible execution path (if/else branches, loops, function calls), and a <b>Data Flow Graph (DFG)</b>, tracking how values move between variables. Some enterprise tools (Veracode is a good example to name) go further and convert everything into one <b>Common Intermediate Representation</b> shared across all supported languages, so the exact same detection logic runs identically whether the source was Java or C#.</li>
+          </ul>
+          This is the honest one-line answer if asked cold: <i>"It turns the code into a tree, then traces tainted data through that tree to find risky flows — it never actually runs the program."</i>
+        </div>
+      </details>
+      <details class="qa">
+        <summary>What analysis techniques actually run on top of that model to find a vulnerability?</summary>
+        <div class="answer">
+          Three layered techniques, from simplest to most powerful:
+          <ul>
+            <li><b>Pattern/signature matching</b> — the fastest, simplest technique: look for known-bad code shapes directly in the AST (a call to a deprecated crypto function, a hardcoded string that looks like a credential). Fast, few false positives, but only catches obvious cases.</li>
+            <li><b>Control flow analysis</b> — walks the CFG to understand branches and loops, catching logic flaws like a security check that can be bypassed under certain conditions.</li>
+            <li><b>Data flow / taint analysis</b> — the real differentiator for a good SAST tool. It marks untrusted input as "tainted" at its <b>source</b> (e.g. <code>request.getParameter()</code>), then follows that tainted value across the DFG through every assignment and function call, checking whether it reaches a dangerous <b>sink</b> (a SQL query, a file write, an <code>eval()</code>) without passing through a <b>sanitizer</b> along the way. If tainted data reaches a sink unsanitized — that's the SQL injection or XSS finding.</li>
+          </ul>
+        </div>
+        <div class="ref">Reference: Wiz "What is SAST", Checkmarx/Cycode SAST technical guides, appsecsanta.com.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="scan-dast">
+      <div class="topic-head"><span class="topic-num">SCAN</span><h2>How a DAST scan actually runs</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>Walk me through, step by step, how a DAST scan actually runs against a live application.</summary>
+        <div class="answer">
+          <ul>
+            <li><b>1. Target identification</b> — the scanner is pointed at a URL, or in API-focused testing, at an OpenAPI/Swagger spec or GraphQL introspection endpoint.</li>
+            <li><b>2. Authentication</b> — if the app requires login, the scanner establishes and maintains an authenticated session (cookies, bearer tokens, SSO flow) so it can reach protected routes, since that's often where the highest-impact issues live.</li>
+            <li><b>3. Crawling / spidering</b> — the tool maps the entire attack surface: following links, submitting forms, parsing client-side JavaScript. Modern single-page apps need an <b>AJAX spider</b> since content loads dynamically and there's no static HTML to follow — any endpoint the crawler misses simply never gets tested.</li>
+            <li><b>4. Attack simulation</b> — against every discovered input (form field, URL parameter, header), the scanner fires crafted payloads targeting specific vulnerability classes: SQL injection strings, XSS vectors, path traversal sequences, malformed headers — largely mapped to the OWASP Top 10.</li>
+            <li><b>5. Response analysis</b> — the tool inspects the application's responses for signs the attack landed: error messages, unexpected behavior, a reflected payload, a timing difference. Some newer scanners (Invicti's "proof-based scanning" is the named example) go further and safely confirm exploitability rather than inferring it from the response alone — which is what cuts false positives sharply.</li>
+            <li><b>6. Reporting</b> — findings compiled with the request/response pair that triggered them, so a developer can reproduce it directly.</li>
+          </ul>
+        </div>
+        <div class="ref">Reference: Wiz "DAST Scanning", PortSwigger/Burp Suite documentation, Invicti technical blog.</div>
+      </details>
+      <details class="qa">
+        <summary>What makes DAST harder to run well than it sounds?</summary>
+        <div class="answer">Authentication handling (session-based, token-based, SSO — the scanner needs the right method for your app or protected routes never get tested), single-page apps needing an AJAX spider instead of a traditional HTML crawler, and business logic flaws (can a user reach data they shouldn't, can a multi-step workflow be chained into an attack) that no automated scanner reliably catches — those still need human penetration testing on top of DAST.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="scan-iast">
+      <div class="topic-head"><span class="topic-num">SCAN</span><h2>How an IAST scan actually runs</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>How does IAST actually observe what's happening inside the application while it's running?</summary>
+        <div class="answer">
+          Through <b>instrumentation</b> — an agent, sensor, or runtime hook is attached to the application in a QA/staging environment, before or as it starts:
+          <ul>
+            <li><b>Compiled/VM languages (Java, .NET)</b> — typically <b>bytecode instrumentation</b>: the agent registers with the runtime at startup (in Java, via the <code>-javaagent</code> flag and the JVM's <code>Instrumentation</code> API) and rewrites each class's bytecode as it loads, inserting hooks around security-sensitive calls (database queries, file I/O, deserialization) — with zero changes to the actual source code.</li>
+            <li><b>Dynamic languages (Python, Node.js, Ruby)</b> — usually <b>monkey-patching</b>: the agent swaps out sensitive functions/methods at runtime with instrumented wrapped versions.</li>
+          </ul>
+          Once instrumented, here's the actual test cycle: <b>(1)</b> a normal functional/QA test sends a request to the app (a login attempt, a form submission — this can literally be the team's existing regression test suite); <b>(2)</b> the app processes it as usual; <b>(3)</b> the IAST agent watches, from inside, which functions were called, how tainted data moved between them, and whether it reached a vulnerable sink; <b>(4)</b> if it did, IAST reports the finding with full source-level context (exact file and line) plus the runtime proof that the path was actually exercised.
+        </div>
+        <div class="ref">Reference: New Relic/OpenTelemetry Java instrumentation internals, Raven.io/ZetCode IAST guides.</div>
+      </details>
+      <details class="qa">
+        <summary>Why does IAST have such a low false-positive rate compared to SAST, and what's the catch?</summary>
+        <div class="answer">Because it only reports a vulnerability that was <i>actually reached and exercised</i> during a real test run — not a theoretical code path a static tool merely traced on paper. The catch is the flip side of that strength: IAST's coverage is exactly as good as the test suite driving it. A vulnerable function that no test ever calls is invisible to IAST, no matter how dangerous it is. It also only supports platforms with an available agent, and instrumentation adds some runtime performance overhead.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="scan-sca">
+      <div class="topic-head"><span class="topic-num">SCAN</span><h2>How an SCA scan actually runs</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>Walk me through, step by step, how an SCA scan actually runs.</summary>
+        <div class="answer">
+          <ul>
+            <li><b>1. Parse manifests and lockfiles</b> — <code>package.json</code>/<code>package-lock.json</code>, <code>pom.xml</code>, <code>requirements.txt</code>, <code>go.mod</code>, <code>Gemfile.lock</code>. The manifest says what you asked for; the lockfile has the exact resolved version actually installed — SCA needs both.</li>
+            <li><b>2. Build the full dependency tree</b> — not just <b>direct</b> dependencies (the ones you explicitly added), but every <b>transitive</b> dependency underneath them. A project with 20 direct dependencies can easily pull in 500+ total packages once transitive dependencies are resolved — and most real-world vulnerabilities live in that transitive layer (Log4Shell is the textbook example: most affected applications never declared Log4j directly — it arrived buried inside Spring Boot, Solr, or Elasticsearch).</li>
+            <li><b>3. Correlate against vulnerability databases</b> — match each component's exact version against the <b>NVD</b>, <b>GitHub Security Advisories</b>, <b>OSV</b>, and vendor-specific feeds to find known CVEs. This step is <i>matching, not discovery</i> — SCA doesn't find new vulnerabilities, it tells you whether a vulnerability someone else already found and published affects a component you're using.</li>
+            <li><b>4. License analysis</b> — flag copyleft licenses (GPL-style) that could force obligations on your own codebase if shipped commercially.</li>
+            <li><b>5. Generate the SBOM</b> — the same inventory built in step 2, exported in a standard machine-readable format (CycloneDX or SPDX) so it can be shared, audited, or instantly re-checked the moment a new CVE is published.</li>
+            <li><b>6. (Advanced) Reachability analysis</b> — the more mature tools go one step further and check whether the vulnerable function inside that dependency is actually called anywhere in your code, using static call-graph analysis. A CVE in a function you never invoke is far lower priority than one on a path your app actually executes — this is the single biggest lever for cutting SCA false-positive noise.</li>
+          </ul>
+        </div>
+        <div class="ref">Reference: Wiz "SCA Scanning", Chainguard/appsecsanta SCA technical guides.</div>
+      </details>
+      <details class="qa">
+        <summary>Why can't SCA just scan the manifest file alone and skip the lockfile?</summary>
+        <div class="answer">The manifest only shows direct dependencies and often a loose version range (e.g. <code>^2.0.0</code>), not the exact version actually installed. The lockfile pins the precise resolved version for every package, direct and transitive — without it, an SCA tool is guessing at what's really running rather than matching against what's really there.</div>
+      </details>
+    </div>
+
+    <div class="topic ops" id="iac">
+      <div class="topic-head"><span class="topic-num">IAC</span><h2>Infrastructure as Code + IaC scanning</h2><span class="topic-tag">ops</span></div>
+      <details class="qa">
+        <summary>What tools do you use for IaC, and how do you scan it for security issues?</summary>
+        <div class="answer">Author infrastructure in <b>Terraform</b>, configuration in <b>Ansible</b> (or Kubernetes YAML). Before <code>apply</code>, run static scanners against the IaC files themselves — <b>Checkov</b> or <b>tfsec</b> — catching misconfigurations (e.g. a public S3 bucket, a security group open to <code>0.0.0.0/0</code>) before anything is ever provisioned.</div>
+      </details>
+    </div>
+
+    <div class="topic ops" id="docker">
+      <div class="topic-head"><span class="topic-num">DOCKER</span><h2>Docker and image scanning</h2><span class="topic-tag">ops</span></div>
+      <details class="qa">
+        <summary>How do you secure a container image before it goes to production?</summary>
+        <div class="answer">Scan the built image with <b>Trivy</b> (or Grype) for OS/package CVEs, use minimal base images (distroless/alpine), avoid running as root, and push only signed/scanned images — gate the pipeline so critical-CVE images can't be promoted.</div>
+      </details>
+      <details class="qa">
+        <summary>What's a container registry, and which have you used?</summary>
+        <div class="answer">Stores and versions container images, like Git does for code. Common ones: Docker Hub, <b>Amazon ECR</b>, Azure Container Registry, GitLab Container Registry, Harbor (self-hosted, OSS).</div>
+      </details>
+    </div>
+
+    <div class="topic ops" id="docker-encryption">
+      <div class="topic-head"><span class="topic-num">NET</span><h2>Encrypting communication between containers</h2><span class="topic-tag">ops</span></div>
+      <details class="qa">
+        <summary>How do you encrypt communication between Docker containers?</summary>
+        <div class="answer">
+          A few layers, usually combined:
+          <ul>
+            <li><b>Overlay network encryption</b> — Docker Swarm supports <code>--opt encrypted</code> on an overlay network, encrypting traffic between hosts at the network layer automatically.</li>
+            <li><b>TLS between services</b> — terminate TLS in the application itself, or in front of it with a reverse proxy/sidecar, so traffic is encrypted regardless of the underlying network.</li>
+            <li><b>Service mesh mTLS</b> — in Kubernetes, this is normally handled by a service mesh like <b>Istio</b> (see below), which automatically encrypts and authenticates every service-to-service call with mutual TLS, without the application code having to manage certificates itself.</li>
+            <li><b>Network policies</b> — restrict which containers/pods can even talk to each other in the first place (Kubernetes <code>NetworkPolicy</code>, or Docker user-defined bridge networks), reducing the blast radius even before encryption is considered.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <div class="topic ops" id="service-mesh">
+      <div class="topic-head"><span class="topic-num">MESH</span><h2>Service mesh — Istio</h2><span class="topic-tag">ops</span></div>
+      <details class="qa">
+        <summary>What is a service mesh, and what is Istio specifically?</summary>
+        <div class="answer">
+          A <b>service mesh</b> is a dedicated infrastructure layer that manages service-to-service communication in a microservices/Kubernetes environment — without the application code needing to handle networking concerns itself. It typically works by injecting a lightweight <b>sidecar proxy</b> (Envoy, in Istio's case) next to every service pod; all traffic in and out of the pod flows through that proxy.<br><br>
+          <b>Istio</b> is the most widely used service mesh implementation. What it provides:
+          <ul>
+            <li><b>Security</b> — automatic <b>mutual TLS (mTLS)</b> between services, so every call is encrypted and both sides are authenticated, with zero changes to application code.</li>
+            <li><b>Traffic management</b> — fine-grained routing, retries, timeouts, canary/blue-green rollouts, circuit breaking.</li>
+            <li><b>Observability</b> — automatic metrics, distributed tracing, and service-to-service traffic graphs, since every request already passes through the proxy.</li>
+          </ul>
+          Relevant here because it's a common building block in the exact Kubernetes/OpenShift environments many DevSecOps job postings reference for "container security concepts, K8s security basics."
+        </div>
+      </details>
+    </div>
+
+    <div class="topic ops" id="vault">
+      <div class="topic-head"><span class="topic-num">SECRET</span><h2>Secret management — HashiCorp Vault</h2><span class="topic-tag">ops</span></div>
+      <details class="qa">
+        <summary>What is HashiCorp Vault, what's the use case, and how do you integrate it into a pipeline or cluster?</summary>
+        <div class="answer">
+          <b>Vault</b> is a centralized secret management system — instead of credentials, API keys, and certificates sitting in config files, environment variables, or (worse) hardcoded in Git, everything is stored, tightly access-controlled, and audited in one place.<br><br>
+          <b>Use case:</b> a database password that never has to be known or copy-pasted by a human; short-lived, automatically-expiring credentials generated on demand instead of a static password that lives forever; a single audit trail of exactly which service or person accessed which secret and when.<br><br>
+          <b>How it works / key concepts:</b>
+          <ul>
+            <li><b>KV secrets engine</b> — the simplest case, a secure key-value store for static secrets.</li>
+            <li><b>Dynamic secrets</b> — Vault generates a short-lived, unique credential (e.g. a database user) on request and automatically revokes it after a lease expires — nothing long-lived to leak.</li>
+            <li><b>Auth methods</b> — services/pipelines authenticate to Vault itself using <b>AppRole</b> (common for CI/CD runners), Kubernetes service account tokens, or cloud IAM identity — not a static Vault password.</li>
+          </ul>
+          <b>Integration:</b> in Kubernetes, the <b>Vault Agent Injector</b> automatically injects secrets into a pod as files or environment variables at startup, with no application code changes. In a CI/CD pipeline, a job authenticates via AppRole (or OIDC) to fetch only the specific secrets it's scoped for, for that run only — directly relevant to the "HashiCorp Vault" line item many DevSecOps job postings list as core tooling.
+        </div>
+      </details>
+    </div>
+
+    <div class="topic ops" id="cloud-aws">
+      <div class="topic-head"><span class="topic-num">AWS</span><h2>Cloud (AWS) — IAM and security tooling</h2><span class="topic-tag">ops</span></div>
+      <details class="qa">
+        <summary>What is IAM and why is it central to cloud security?</summary>
+        <div class="answer"><b>Identity and Access Management</b> controls who (users, roles, services) can do what to which resources. Principle of least privilege, roles over long-lived keys, MFA on privileged accounts, regular audits of unused permissions — most cloud breaches trace back to IAM misconfiguration, not a zero-day.</div>
+      </details>
+      <details class="qa">
+        <summary>How do Docker and Kubernetes map onto AWS specifically?</summary>
+        <div class="answer"><b>ECR</b> stores images; <b>ECS</b> is AWS's own orchestrator; <b>EKS</b> is managed Kubernetes. <b>GuardDuty</b> is AWS's threat-detection service — it doesn't scan code, it continuously analyzes CloudTrail, VPC Flow Logs, and DNS logs for anomalous account/network activity, which is why it sits at the <i>monitor/operate</i> end of the pipeline rather than in build or test.</div>
+      </details>
+      <details class="qa">
+        <summary>What's the difference between CloudWatch and CloudTrail?</summary>
+        <div class="answer">The simplest framing: <b>CloudWatch tells you how a workload is behaving; CloudTrail tells you who changed what.</b> <b>CloudWatch</b> is operational monitoring — metrics, logs, and alarms for resource performance and health (CPU spiking, a Lambda timing out, an error rate crossing a threshold) — and it's alert-oriented, able to trigger a Lambda or notify a team automatically. <b>CloudTrail</b> is an audit trail — it records every API call made against the account (who did what, when, from where), through the console, CLI, or SDKs — and it's evidence-oriented, used for security investigations, compliance, and answering "who terminated that instance at 2am." In practice they're complementary, not competing: a common pattern is piping CloudTrail logs into CloudWatch so an unusual spike in failed API calls or console logins can trigger a real-time CloudWatch alarm instead of only being discoverable after the fact.</div>
+        <div class="ref">Reference: AWS CloudWatch and CloudTrail documentation.</div>
+      </details>
+    </div>
+
+    <div class="topic ops" id="cloud-multitenant">
+      <div class="topic-head"><span class="topic-num">CLOUD</span><h2>Securing a multi-tenant environment</h2><span class="topic-tag">ops</span></div>
+      <details class="qa">
+        <summary>How do you secure a tenant or multi-tenant cloud environment?</summary>
+        <div class="answer">
+          The core goal is <b>tenant isolation</b>: a security event, bug, or performance spike in one tenant must never expose data or degrade service for another. The main layers:
+          <ul>
+            <li><b>Identity and tenant context</b> — derive tenant identity from an authenticated, verified token (never a client-supplied value alone), and propagate that tenant context through every service call, cache key, and storage path.</li>
+            <li><b>Data isolation model</b> — a spectrum, not one setting: fully separate databases per tenant (strongest isolation, highest operational cost), a shared database with per-tenant schemas, or a shared database/table with <b>Row-Level Security (RLS)</b> enforced at the database layer plus application-level checks as defense in depth. Higher-value/regulated tenants often justify stronger (more expensive) isolation than low-tier ones.</li>
+            <li><b>Encryption</b> — at rest and in transit as a baseline; for the highest-sensitivity tenants, a separate encryption key per tenant (so a key compromise or legal data-deletion request is scoped to one tenant only).</li>
+            <li><b>Network segmentation</b> — restrict lateral movement between tenant workloads (network policies, separate VPCs/subnets, or separate accounts entirely for the strongest boundary).</li>
+            <li><b>Per-tenant rate limiting and quotas</b> — so one noisy or compromised tenant can't exhaust shared resources and degrade service for everyone else (a tenant-scoped denial-of-service).</li>
+            <li><b>Continuous verification, not just initial design</b> — isolation boundaries erode over time through undocumented changes and ungoverned provisioning; continuous compliance scanning that confirms isolation configuration still matches its intended state, and an architecture review gate at every new tenant's onboarding, are what keep the boundary holding as the tenant population grows.</li>
+          </ul>
+        </div>
+        <div class="ref">Reference: OWASP Multi-Tenant Security Cheat Sheet.</div>
+      </details>
+    </div>
+
+    <div class="topic ops" id="azure-sentinel">
+      <div class="topic-head"><span class="topic-num">AZURE</span><h2>Azure — SIEM &amp; log aggregation tooling</h2><span class="topic-tag">ops</span></div>
+      <details class="qa">
+        <summary>What's Azure's SIEM tool and what does it do?</summary>
+        <div class="answer"><b>Microsoft Sentinel</b> — cloud-native SIEM + SOAR. Aggregates logs across the environment, applies analytics rules/ML to detect threats, and can trigger automated playbooks for response. Relevant since many DevSecOps job postings mention "monitoring correlation" tools as a core skill.</div>
+      </details>
+      <details class="qa">
+        <summary>You mentioned Splunk, Prometheus, and Grafana in the same breath — what does each one actually do, and how do they fit together?</summary>
+        <div class="answer">
+          They sit at different layers and aren't really interchangeable:
+          <ul>
+            <li><b>Splunk</b> — a full commercial log aggregation and SIEM platform: it collects, indexes, searches, correlates, and alerts on log data end to end, all in one product. The open source equivalent stack for the same job is <b>ELK</b> (Elasticsearch for storage/search, Logstash for ingestion, Kibana for visualization).</li>
+            <li><b>Prometheus</b> — collects <b>metrics</b>, not logs: numeric time-series data like CPU usage, request latency, or error rate, scraped on a pull-based model. It's not a log store at all — a common source of confusion.</li>
+            <li><b>Grafana</b> — purely a <b>visualization/dashboard layer</b>; it doesn't collect or store anything itself. It queries data sources — Prometheus for metrics, <b>Loki</b> (Grafana's own log-aggregation system, deliberately designed to feel "like Prometheus but for logs") for logs, or even Elasticsearch/Splunk — and renders it all as dashboards.</li>
+          </ul>
+          A typical open source stack pairs <b>Prometheus (metrics) + Loki (logs) + Grafana (dashboards for both)</b> as the OSS alternative to a commercial SIEM like Splunk or Sentinel — same overall goal, different cost/ownership tradeoff.
+        </div>
+      </details>
+    </div>
+
+    <div class="topic ops" id="gitops">
+      <div class="topic-head"><span class="topic-num">IAC</span><h2>Terraform, Ansible, and GitOps/ArgoCD</h2><span class="topic-tag">ops</span></div>
+      <details class="qa">
+        <summary>What's the difference between Terraform and Ansible, and where does ArgoCD fit?</summary>
+        <div class="answer"><b>Terraform</b> = provisioning (declarative, creates infrastructure — VMs, networks, clusters). <b>Ansible</b> = configuration management (installs/configures software on infrastructure that already exists, agentless, push-based). <b>ArgoCD</b> = GitOps continuous delivery for Kubernetes — a controller continuously reconciles the cluster's actual state against the desired state declared in Git, so Git becomes the single source of truth and drift is automatically detected/corrected.</div>
+      </details>
+    </div>
+
+    <hr class="divider">
+    <div class="infobox" style="border-left-color:var(--sec);">
+      <h3>// advanced topics — 2026 roadmap</h3>
+      <p>Everything below goes past a generic foundational interview and into where DevSecOps is actually heading in 2026: Kubernetes-native hardening, Zero Trust, the real mechanics behind artifact signing, and AI/ML as both a new attack surface and a new triage tool. Good to have in your back pocket for a senior or forward-looking conversation — not usually asked of someone in their first DevSecOps role, but strong signal if you bring it up yourself.</p>
+    </div>
+
+    <div class="topic sec" id="adv-k8s">
+      <div class="topic-head"><span class="topic-num">ADV</span><h2>Kubernetes security &amp; cluster hardening</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>Beyond running <code>kube-bench</code>, what does actually hardening a Kubernetes cluster look like?</summary>
+        <div class="answer">
+          It spans the whole cluster surface, not one setting:
+          <ul>
+            <li><b>Benchmark compliance</b> — <b>Kube-bench</b> checks the cluster's configuration (API server flags, kubelet config, etcd permissions, scheduler settings) against the <b>CIS Kubernetes Benchmark</b>; it's a point-in-time compliance check, not a live threat detector.</li>
+            <li><b>RBAC least privilege</b> — audit actual permissions (tools like <code>rakkess</code> show an access matrix per role/service account), remove any lingering <code>cluster-admin</code> bindings, and give every workload its own scoped ServiceAccount instead of reusing <code>default</code>.</li>
+            <li><b>Pod-level hardening</b> — enforce Kubernetes <b>Pod Security Standards</b> (Baseline/Restricted): non-root containers, read-only root filesystem, dropped Linux capabilities, no <code>hostNetwork</code>/<code>hostPID</code>/<code>hostIPC</code>.</li>
+            <li><b>Admission-time policy enforcement</b> — <b>OPA/Gatekeeper</b> for complex cross-resource Rego policies (registry allowlists, mandatory labels, resource quotas); many teams pair this with a signature-verification policy so an unsigned image is rejected before it ever schedules.</li>
+            <li><b>Network segmentation</b> — default-deny <code>NetworkPolicy</code> plus a CNI that can actually enforce it (Cilium or Calico), so a compromised pod can't freely reach every other pod in the cluster.</li>
+            <li><b>etcd and node-level hardening</b> — encrypt etcd at rest via a KMS provider, and harden the underlying node OS itself against the CIS RHEL/Ubuntu benchmark, not just the K8s objects running on it.</li>
+            <li><b>Audit logging</b> — ship the K8s API server's audit log to your SIEM and alert on sensitive operations (create/delete/exec) in production namespaces.</li>
+          </ul>
+        </div>
+        <div class="ref">Reference: CIS Kubernetes Benchmark, NSA/CISA Kubernetes Hardening Guide, NIST SP 800-190.</div>
+      </details>
+      <details class="qa">
+        <summary>What's the practical difference between OPA/Gatekeeper and Kubernetes' own Pod Security Standards?</summary>
+        <div class="answer"><b>Pod Security Standards</b> are Kubernetes-native, built-in, and cover a fixed, predefined set of pod-level checks (privilege escalation, host namespaces, capabilities) — simple to turn on, but not extensible. <b>OPA/Gatekeeper</b> is a general-purpose policy engine — you write arbitrary Rego rules against <i>any</i> resource type, so it covers things PSS can't touch at all: "every image must come from our internal registry," "every Deployment must have a <code>cost-center</code> label," "every image must carry a valid Cosign signature." Many mature clusters run both: PSS as the baseline floor, OPA/Gatekeeper for the organization-specific rules on top.</div>
+      </details>
+      <details class="qa">
+        <summary>We already have a section on cloud IAM — is Kubernetes RBAC the same thing, or something different?</summary>
+        <div class="answer">Same underlying idea, different layer entirely, and both need to be secured independently: <b>AWS IAM</b> controls access to <i>cloud provider resources</i> — who can call the EC2/S3/EKS API, spin up infrastructure, or assume a role. <b>Kubernetes RBAC</b> controls access <i>inside the cluster itself</i> — which user or ServiceAccount can list Secrets, exec into a pod, or create a Deployment in a given namespace, entirely separate from whatever cloud account the cluster happens to run on. A common real gap: a team locks down AWS IAM tightly but leaves the in-cluster RBAC permissive — e.g. every ServiceAccount implicitly able to read Secrets cluster-wide — so an attacker who compromises one pod can walk laterally through the whole cluster even though the cloud account itself is well-governed. Hardening one without the other leaves the other one wide open.<br><br>
+          Practical RBAC least-privilege checklist: give every workload its own dedicated ServiceAccount (never share the <code>default</code> one across unrelated workloads), scope <code>Role</code>/<code>RoleBinding</code> to a single namespace rather than reaching for <code>ClusterRole</code>/<code>ClusterRoleBinding</code> unless genuinely cluster-wide access is required, avoid wildcard verbs/resources (<code>"*"</code>) in a Role definition, and periodically audit actual granted permissions against what's really used (this is exactly what a tool like <code>rakkess</code> or <code>kubeaudit</code> is for) since permissions tend to accumulate and rarely get revoked once a project matures.</div>
+        <div class="ref">Reference: Kubernetes RBAC documentation, CIS Kubernetes Benchmark (RBAC controls), NSA/CISA Kubernetes Hardening Guide.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="adv-zerotrust">
+      <div class="topic-head"><span class="topic-num">ADV</span><h2>Zero Trust architecture &amp; identity</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What does "Zero Trust" actually mean in practice, beyond the buzzword?</summary>
+        <div class="answer">Formalized in <b>NIST SP 800-207</b>: never trust a request based on network location alone (being "inside the VPN" or "inside the cluster" proves nothing), explicitly verify every request's identity and authorization, and assume the network is already compromised (assume breach) so blast radius stays contained even if one component is. In a Kubernetes/microservices context this becomes concrete: <b>mTLS</b> for every service-to-service call (typically via a service mesh like Istio — already covered), least-privilege RBAC applied consistently across K8s, cloud IAM, and Vault policies, and micro-segmentation so a compromised pod can only reach the handful of services it actually needs.</div>
+      </details>
+      <details class="qa">
+        <summary>What problem does SPIFFE/SPIRE actually solve that mTLS alone doesn't?</summary>
+        <div class="answer">mTLS needs both sides to have a valid, trusted certificate — <b>SPIFFE/SPIRE</b> is what issues and rotates those certificates automatically, giving every workload a short-lived, cryptographically verifiable identity (a <b>SPIFFE ID</b>) instead of relying on long-lived static secrets or IP-based trust. It solves the "how does a workload prove who it is, cluster-to-cluster or cloud-to-cloud, without a shared static secret" problem — particularly relevant once you're running across multiple clusters or multiple clouds where a single service mesh's built-in identity doesn't naturally extend.</div>
+      </details>
+      <details class="qa">
+        <summary>What's PAM, and where does it fit alongside Vault?</summary>
+        <div class="answer"><b>Privileged Access Management</b> is specifically about controlling and auditing <i>human</i> access to highly sensitive systems and credentials — think a break-glass admin login, not a service's database password. Vault already handles dynamic, short-lived credentials well for workloads and pipelines; a dedicated enterprise PAM tool (CyberArk is the common name here) adds session recording, just-in-time privilege elevation, and approval workflows specifically for human privileged access — the two are complementary, not competing.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="adv-signing">
+      <div class="topic-head"><span class="topic-num">ADV</span><h2>Image/artifact signing — Cosign, SLSA, Rekor</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>Walk me through what actually happens, mechanically, when you sign and push a container image with Cosign.</summary>
+        <div class="answer">
+          <ul>
+            <li><b>1. Build and hash</b> — the image is built, and a cryptographic digest (<code>sha256:...</code>) is computed over its content. This digest — not the mutable tag — is what actually gets signed; a tag like <code>:latest</code> can be repointed to different content later, a digest can't.</li>
+            <li><b>2. Sign</b> — <b>Cosign</b> (part of the Sigstore project) signs that digest. Modern practice uses <b>keyless signing</b>: instead of managing a long-lived private key yourself, Cosign requests a short-lived certificate from Sigstore's Fulcio CA using your CI system's own <b>OIDC identity</b> (e.g. "this is a GitHub Actions run from repo X, workflow Y") — so the signature is tied to a verifiable pipeline identity instead of a key someone has to protect forever.</li>
+            <li><b>3. Push and record</b> — the signed image is pushed to the registry over TLS (registry pushes should always be over HTTPS/TLS — an unencrypted registry push is a real, avoidable supply-chain gap). The signature itself, plus a transparency record, is published to <b>Rekor</b> — Sigstore's public, append-only transparency log — so the signing event is independently, publicly auditable and can't be silently altered after the fact.</li>
+            <li><b>4. Verify before deploy</b> — at Kubernetes admission time, a policy engine (<b>Kyverno</b>'s <code>imageVerify</code>, or OPA/Gatekeeper) checks the image's signature against the expected signer identity before allowing the pod to schedule at all — an unsigned or wrongly-signed image is rejected outright, not just flagged.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="qa">
+        <summary>What is SLSA, and what do the levels actually mean?</summary>
+        <div class="answer"><b>SLSA</b> (Supply-chain Levels for Software Artifacts) is a framework that grades how trustworthy a build's <i>provenance</i> is — can you actually prove what source and process produced this artifact? Roughly: <b>L1</b> — the build process is documented and produces provenance metadata at all. <b>L2</b> — the build runs on a hosted/managed build service and the provenance is signed. <b>L3</b> — the build runs in an isolated, ephemeral, hardened environment where even the build service operator can't tamper with it undetected (a common real-world path here: <b>Tekton Chains</b>, which automatically signs provenance for every Tekton pipeline run). Higher levels are about making it progressively harder for an attacker — or even a compromised insider — to slip something into the build undetected.</div>
+        <div class="ref">Reference: slsa.dev, Sigstore/Cosign documentation, OpenSSF Scorecard.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="adv-compliance">
+      <div class="topic-head"><span class="topic-num">ADV</span><h2>Compliance as code</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What is "compliance as code," and how do you actually scan for it?</summary>
+        <div class="answer">Instead of a compliance framework (PCI-DSS, ISO 27001, CIS Controls v8) living in a spreadsheet that gets manually re-checked once a year, its individual controls get encoded as machine-checkable policy — most commonly as <b>OPA/Rego rules</b> — and evaluated continuously in the same pipeline that already runs SAST/SCA. A control like "no S3 bucket may be publicly readable" or "all databases must have encryption at rest enabled" becomes a Rego rule that runs against every Terraform plan or live cloud config, the same way a security gate runs against SAST findings — pass/fail, automatically, on every change, with a timestamped record of every evaluation as your audit evidence instead of a point-in-time manual attestation. This is exactly what turns an annual audit scramble into an always-current, continuously provable state.</div>
+        <div class="ref">Reference: OPA/Rego documentation, CIS Controls v8, OWASP DSOMM (compliance-as-code is one of its measured practices).</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="adv-trivy">
+      <div class="topic-head"><span class="topic-num">ADV</span><h2>Trivy — capabilities &amp; limits</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What can Trivy actually scan? It's often described as "just an image scanner" — is that accurate?</summary>
+        <div class="answer">
+          No — Trivy is genuinely multi-purpose, which is exactly why it shows up so often as the free/OSS complement to a commercial stack:
+          <ul>
+            <li><b>Container images</b> — OS package and language-library CVEs inside a built image, the use case it's best known for.</li>
+            <li><b>Filesystem / repository scans</b> — scan a local checkout or filesystem directly, without needing a built image at all.</li>
+            <li><b>SCA (dependency scanning)</b> — Trivy can scan manifests/lockfiles for known-vulnerable dependencies, overlapping with what Black Duck/Sonatype Nexus IQ do at enterprise scale.</li>
+            <li><b>IaC misconfiguration scanning</b> — Terraform, Kubernetes manifests, Dockerfiles, and CloudFormation, overlapping with Checkov/tfsec.</li>
+            <li><b>SBOM generation</b> — can generate a CycloneDX or SPDX SBOM directly from an image or filesystem.</li>
+            <li><b>Kubernetes cluster scanning</b> — the <b>Trivy Operator</b> runs in-cluster for continuous rescanning of already-running workloads, catching a CVE disclosed <i>after</i> a workload was already deployed.</li>
+            <li><b>Secret scanning</b> — it can also catch hardcoded secrets inside a scanned image or filesystem as a secondary capability.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="qa">
+        <summary>So what are Trivy's actual limits — where would you still reach for Black Duck, Sonatype, or Fortify instead?</summary>
+        <div class="answer">Trivy is a vulnerability/misconfiguration <i>matcher</i> against known public data (NVD, vendor advisories) — it doesn't do the deeper analysis an enterprise platform adds on top: no reachability/call-graph analysis to tell you whether a vulnerable function is actually invoked (Black Duck SCA and Snyk both go further here), no license-compliance policy engine at the depth Black Duck offers for legal/OSS governance, no true SAST (no data-flow/taint analysis of your own proprietary code — that's Fortify/SonarQube/Semgrep territory entirely), and no centralized enterprise dashboard, SLA tracking, or compliance-report generation across a whole organization (that's what DefectDojo, Fortify SSC, or Black Duck SRM add on top of Trivy's raw findings). The honest framing: Trivy is an excellent, fast, free first-line scanner across many artifact types — it's a complement to your commercial stack's deeper analysis and governance layer, not a replacement for it.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="adv-invicti">
+      <div class="topic-head"><span class="topic-num">ADV</span><h2>Invicti, clarified</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>Is Invicti a DAST tool, an ASPM tool, or something else — and how would you actually use it?</summary>
+        <div class="answer">Both, and the "how" matters more than the label. At its core, Invicti is a <b>DAST</b> engine, distinguished by <b>proof-based scanning</b> — instead of just flagging a pattern that looks exploitable (the usual DAST false-positive problem), it safely attempts to actually confirm the vulnerability is exploitable before reporting it, which is what drives its very low false-positive rate. Since merging with Kondukto, it also ships an <b>ASPM</b> layer — connecting to 100+ other scanners (not just its own DAST) to correlate, deduplicate, and prioritize findings org-wide, the same category of tool as DefectDojo, Black Duck SRM, or Fortify SSC. Practically: you'd point Invicti's DAST at a running staging/QA environment as part of the pipeline's test stage, and separately use its ASPM side as a candidate central dashboard if you wanted one platform correlating DAST + SAST + SCA findings together rather than running DefectDojo alongside it.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="adv-ai-threats">
+      <div class="topic-head"><span class="topic-num">ADV</span><h2>AI/ML security &amp; LLM threats</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>What's the OWASP LLM Top 10, and what are the headline risks?</summary>
+        <div class="answer">
+          The AI/ML equivalent of the web OWASP Top 10 — the most critical risks specific to LLM-powered applications:
+          <ul>
+            <li><b>Prompt injection</b> — the headline risk: malicious instructions hidden in user input or in content the LLM reads (a webpage, a document, a tool's output) override the application's intended behavior.</li>
+            <li><b>Insecure output handling</b> — treating an LLM's output as safe/trusted and passing it directly into a shell command, a database query, or rendered HTML without the same validation any other untrusted input would get.</li>
+            <li><b>Training data poisoning</b> — corrupting the data a model is trained or fine-tuned on to implant a backdoor or bias.</li>
+            <li><b>Model theft / model supply chain</b> — a model file itself (frequently a Python <code>pickle</code> file) can contain malicious deserialization payloads, and models pulled from public hubs (Hugging Face) carry the same "malicious dependency" risk a poisoned npm package does.</li>
+            <li><b>Excessive agency</b> — giving an LLM-based agent more tool access or autonomy than the task actually requires, so a successful prompt injection can cascade into real-world actions (sending emails, making API calls, modifying data).</li>
+          </ul>
+        </div>
+        <div class="ref">Reference: OWASP LLM Top 10 (Top 10 for LLM Applications).</div>
+      </details>
+      <details class="qa">
+        <summary>What is MITRE ATLAS, and how is it different from MITRE ATT&amp;CK?</summary>
+        <div class="answer"><b>ATT&amp;CK</b> catalogs adversary tactics/techniques against traditional IT systems (initial access, lateral movement, exfiltration). <b>ATLAS</b> is MITRE's parallel framework specifically for <b>adversarial attacks against AI/ML systems</b> — model evasion (crafting input to fool a classifier), model inversion (reconstructing training data from a model's outputs), and data poisoning — the ML-specific attack techniques ATT&CK was never designed to cover.</div>
+      </details>
+      <details class="qa">
+        <summary>What's specifically risky about MCP (Model Context Protocol) servers and agentic AI tool use?</summary>
+        <div class="answer">Once an LLM can call tools autonomously — through MCP servers or any agent framework — new, very concrete risks appear: <b>tool poisoning</b> (a malicious or compromised MCP server returns instructions disguised as data, hijacking the agent's next action), <b>cross-agent/cross-tool supply chain risk</b> (one compromised tool in a multi-tool chain can manipulate everything downstream of it), and the need for <b>human-in-the-loop enforcement</b> on any consequential action (sending data externally, modifying production systems) rather than letting an agent act fully autonomously on unverified input.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="adv-ai-pipeline">
+      <div class="topic-head"><span class="topic-num">ADV</span><h2>AI/LLM in the DevSecOps pipeline</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>Beyond the AI-assisted triage already covered, where else can AI/LLMs actually help inside a DevSecOps pipeline today?</summary>
+        <div class="answer">
+          A few concrete, already-real use cases (matching the "AI proposes, human approves" pattern from the triage discussion earlier):
+          <ul>
+            <li><b>Auto-generating and refining SAST custom rules</b> — describing a pattern in plain language and having the assistant draft the Semgrep/CodeQL rule syntax, which a human then reviews and tunes (this is what Semgrep's own AI Assistant does).</li>
+            <li><b>Auto-remediation PRs</b> — given a confirmed SAST/SCA finding, generating the actual code fix as a reviewable pull request rather than just a text description of the problem (Corgea is a named example built specifically around this).</li>
+            <li><b>Summarizing and explaining findings</b> — turning a dense scanner report into a plain-language explanation a developer can act on quickly, cutting the time spent just understanding what a finding means.</li>
+            <li><b>Drafting IaC, policies, or documentation securely</b> — writing a first-pass Terraform module, OPA/Rego policy, or threat-model writeup, still reviewed by a human before it's trusted.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="qa">
+        <summary>What could an LLM like Claude specifically do here, and what are the honest limits?</summary>
+        <div class="answer">Realistically: reading a diff or scan output and flagging likely-risky patterns in plain language, drafting a custom SAST rule or a remediation patch for a human to review, summarizing a pile of findings into a prioritized narrative, or helping write a threat-model document or an IaC policy. The honest limit — worth saying explicitly in an interview rather than overselling it — is that an LLM is not a substitute for a deterministic scanner: it doesn't have guaranteed, repeatable coverage the way taint analysis does, it can miss things or be wrong confidently, and anything it proposes (a rule, a fix, a "this is safe to ignore" triage call) needs a human or an already-agreed policy to actually sign off before it's acted on — exactly the same governance principle from the AI-triage discussion earlier, just applied one level more broadly.</div>
+      </details>
+    </div>
+
+    <div class="topic sec" id="adv-ai-scanning">
+      <div class="topic-head"><span class="topic-num">ADV</span><h2>Scanning LLM models &amp; AI-powered apps</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>How do you actually scan or test an LLM-powered application — is it a DAST scan, an API scan, something else entirely?</summary>
+        <div class="answer">
+          It's genuinely a combination, since "the app" now has two different attack surfaces:
+          <ul>
+            <li><b>The model artifact itself</b> — before ever loading a downloaded model file, scan it for malicious embedded code: many model formats (especially Python's <code>pickle</code>-based ones) can execute arbitrary code on load, so a poisoned model from a public hub is functionally similar to a malicious PyPI package. Tools like <b>ModelScan</b> (Protect AI) exist specifically for this — treat it as SCA for models.</li>
+            <li><b>The application/API layer</b> — this genuinely is a DAST/API-scan-style exercise: the LLM endpoint is tested like any other API, sending crafted inputs (prompt injection payloads, jailbreak attempts, boundary-testing content) and checking whether the guardrails hold — the same black-box "attack the running thing from outside" model DAST already uses, just with AI-specific payloads instead of SQLi/XSS ones.</li>
+            <li><b>Adversarial/red-team frameworks purpose-built for this</b> — <b>Garak</b>, <b>PyRIT</b> (Microsoft), and <b>Counterfit</b> automate exactly this kind of LLM-specific attack simulation, the rough equivalent of what Burp Suite/ZAP are for a traditional web app.</li>
+            <li><b>Guardrail/output validation testing</b> — separately verifying that runtime guardrails (LLM Guard, NeMo Guardrails, Lakera Guard) actually catch what they claim to — prompt injection attempts, jailbreaks, unsafe content — under adversarial conditions, not just happy-path prompts.</li>
+          </ul>
+          The honest one-line framing for an interview: <i>"Scan the model file the way you'd scan a dependency, and pentest the model's API the way you'd pentest any other endpoint — just with a different payload library."</i>
+        </div>
+        <div class="ref">Reference: OWASP LLM Top 10, MITRE ATLAS, Protect AI ModelScan, Garak/PyRIT documentation.</div>
+      </details>
+    </div>
+
+    <hr class="divider">
+
+    <div class="topic sec" id="gap-assessment">
+      <div class="topic-head"><span class="topic-num">GAP</span><h2>What's missing? Gap assessment &amp; maturity models</h2><span class="topic-tag">sec</span></div>
+      <details class="qa">
+        <summary>We've covered risk assessment, threat modeling, and the pipeline's security stages — is anything missing from a complete DevSecOps program?</summary>
+        <div class="answer">
+          Yes — everything covered so far is mostly the <i>automated tooling layer</i ("shift left"). A genuinely complete program also needs:
+          <ul>
+            <li><b>Shift right, not just shift left</b> — runtime protection after deployment: a <b>WAF</b> (blocks known attack patterns at the network edge) and <b>RASP</b> (Runtime Application Self-Protection — an in-app agent that can detect and block an exploit attempt live, in production). Everything discussed earlier stops at "before release"; shift right covers "after release."</li>
+            <li><b>Human-driven penetration testing / red teaming</b> — automated scanners (SAST/DAST/IAST) don't reliably catch <b>business logic flaws</b>: can a user reach data they shouldn't through a legitimate-looking multi-step workflow? That still needs a skilled human tester. <b>Purple teaming</b> — red team (attackers) and blue team (defenders) working together rather than adversarially — is increasingly how this gets run to maximize learning.</li>
+            <li><b>Security champions program</b> — a nominated, security-minded developer embedded in each team, acting as the first line of triage and a bridge to the central AppSec team, rather than security being one small central team trying to cover every squad.</li>
+            <li><b>Security awareness training for developers</b> — secure coding practices, phishing awareness, social engineering — the human layer, since tooling alone doesn't fix a developer who doesn't know what an injection vulnerability looks like in the first place.</li>
+            <li><b>Incident response (IR) / DFIR planning</b> — a documented runbook for when something <i>does</i> get through: who's paged, how the incident is contained, evidence preservation, post-incident review. Tabletop exercises test this before a real incident forces it.</li>
+            <li><b>Cryptography and key/secrets lifecycle management</b> — beyond just storing secrets in Vault: key rotation policy, HSM/KMS usage for the most sensitive keys, certificate expiry management.</li>
+            <li><b>Data classification and data security</b> — not every field in a database is equally sensitive; classifying data (public/internal/confidential/restricted) drives where encryption, masking, and DLP (Data Loss Prevention) controls actually need to apply.</li>
+            <li><b>Continuous compliance mapping</b> — mapping controls to frameworks like PCI DSS, ISO 27001, or local regulatory requirements (especially relevant in banking/government client environments) as an ongoing, automated practice rather than a once-a-year audit scramble.</li>
+            <li><b>Bug bounty / crowdsourced testing</b> — an ongoing, continuously-running complement to scheduled internal pentests, particularly valuable for public-facing applications.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="qa">
+        <summary>How would you formally identify these gaps rather than just guessing what's missing?</summary>
+        <div class="answer">
+          That's exactly what a <b>DevSecOps maturity model</b> is for — a structured framework to assess where the organization actually stands today across every pillar (culture, automation, threat modeling coverage, tool integration, incident response) and build a prioritized roadmap from there, instead of guessing.
+          <ul>
+            <li><b>OWASP DSOMM</b> (DevSecOps Maturity Model) — the most widely adopted open framework for this; breaks the practice into measurable, executable levels rather than vague statements like "we do security."</li>
+            <li><b>BSIMM</b> (Building Security In Maturity Model) — benchmarks an organization's practices against data gathered from real firms.</li>
+            <li><b>OWASP SAMM</b> — similar idea, oriented around software assurance maturity specifically (already referenced under SSDLC).</li>
+          </ul>
+          A practical <b>gap assessment</b> means walking through a framework like DSOMM stage by stage, honestly scoring current maturity per pillar, then prioritizing fixes where the gap between "current state" and "target state" creates the most real risk — not fixing everything at once, and reassessing periodically rather than treating it as a one-time audit.
+        </div>
+        <div class="ref">Reference: OWASP DSOMM (dsomm.owasp.org), BSIMM (bsimm.com), OWASP SAMM.</div>
+      </details>
+    </div>
+
+    <div class="topic" id="closing">
+      <div class="topic-head"><span class="topic-num">NOTE</span><h2>Closing / behavioral angle</h2><span class="topic-tag" style="color:var(--neutral);background:var(--neutral-dim)">note</span></div>
+      <details class="qa">
+        <summary>You come from a DevOps background — why DevSecOps, and why this company specifically?</summary>
+        <div class="answer">Coaching note: this is the chance to be authentic rather than recite definitions. Draw a direct line from your own hands-on DevOps experience — container/Kubernetes work, Terraform/Ansible automation, any exposure to security tooling like a scanner, Vault, or a SIEM — to why that already sits right next to security, and why formalizing that shift toward a security-focused role is a natural next step. Then connect it to whatever this specific company's tool stack and specialization actually is (research it beforehand). Be honest about deliberately building depth (courses/certs) rather than claiming years of AppSec-specific experience not yet had.</div>
+      </details>
+    </div>
+
+    <hr class="divider">
+
+    <div id="quickfire">
+      <div class="nav-head"><h2>// quick-fire recall</h2></div>
+      <div class="quickfire">
+        <div>SAST = static, before running the app. <span>DAST = dynamic, against a running app.</span></div>
+        <div>SCA = scans dependencies. <span>SBOM = the inventory those scans produce.</span></div>
+        <div>IAST = SAST + DAST combined. <span>Runs during functional testing.</span></div>
+        <div>STRIDE = threat modeling categories. <span>PASTA = risk-centric threat modeling process.</span></div>
+        <div>Terraform = provision. <span>Ansible = configure. ArgoCD = GitOps deploy.</span></div>
+        <div>Fortify → SAST + WebInspect (DAST). <span>Black Duck → SCA, Coverity (SAST), Seeker (IAST).</span></div>
+        <div>Polaris = the AST engines. <span>SRM / Fortify SSC / Invicti ASPM = the correlation dashboards.</span></div>
+        <div>Initial risk assessment = scoping. <span>Application risk assessment = ongoing, app-specific treatment.</span></div>
+        <div>Risk assessment = "should we worry?" <span>Threat modeling = "about what, exactly?"</span></div>
+        <div>Tekton = K8s-native CI/CD engine. <span>OpenShift Pipelines = Red Hat's managed Tekton.</span></div>
+        <div>Quality gate = code metrics threshold. <span>Security gate = vulnerability severity threshold.</span></div>
+        <div>GuardDuty = AWS threat detection. <span>Sentinel = Azure SIEM. Both sit at monitor/operate.</span></div>
+      </div>
+    </div>
+
+    <div class="footer-note">good luck — you've got this</div>
+  </div>
+</div>
+
+<script>
+  const ICONS = {
+    clipboard:'<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/>',
+    code:'<polyline points="8 6 3 12 8 18"/><polyline points="16 6 21 12 16 18"/>',
+    shield:'<path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"/>',
+    box:'<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>',
+    bug:'<path d="M9 9V7a3 3 0 0 1 6 0v2"/><rect x="6" y="9" width="12" height="10" rx="4"/><line x1="6" y1="13" x2="2" y2="13"/><line x1="18" y1="13" x2="22" y2="13"/><line x1="9" y1="20" x2="6" y2="22"/><line x1="15" y1="20" x2="18" y2="22"/>',
+    rocket:'<path d="M12 2c3 2 5 6 5 10-2 1-3 3-5 3s-3-2-5-3c0-4 2-8 5-10z"/><circle cx="12" cy="10" r="1.6"/><path d="M8 15l-2 5 5-2"/><path d="M16 15l2 5-5-2"/>',
+    cloud:'<path d="M7 18a4 4 0 0 1-.5-7.97A5 5 0 0 1 16 8a4.5 4.5 0 0 1 1 8.9"/><polyline points="8 20 12 16 16 20"/><line x1="12" y1="16" x2="12" y2="23"/>',
+    chart:'<polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/>'
+  };
+  function svgIcon(name){ return `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`; }
+
+  /* ============ PIPELINE DIAGRAM (straight line + overlay checkpoints/gates) ============ */
+  const stages = [
+    {icon:'clipboard', name:'Plan', tag:'sec', activities:['Security requirements','Threat modeling (STRIDE)','Initial risk assessment'], oss:['OWASP Threat Dragon','pytm'], comm:['—']},
+    {icon:'code', name:'Code', tag:'dev', activities:['Secure coding standards','Secret scanning','Pre-commit hooks'], oss:['gitleaks','TruffleHog','GH Actions secret scan'], comm:['—']},
+    {icon:'shield', name:'SAST', tag:'sec', activities:['Static code analysis','Custom rule tuning'], oss:['SonarQube','Semgrep'], comm:['Fortify SAST','Black Duck Coverity']},
+    {icon:'box', name:'Build / SCA', tag:'dev', activities:['Dependency scan','SBOM generation','IaC scan'], oss:['OWASP Dependency-Check','CycloneDX','checkov','tfsec'], comm:['Black Duck SCA']},
+    {icon:'bug', name:'Test', tag:'sec', activities:['DAST scan','IAST instrumentation','Container image scan'], oss:['OWASP ZAP','Trivy'], comm:['Fortify WebInspect','Black Duck Seeker','Invicti DAST']},
+    {icon:'rocket', name:'Release', tag:'sec', activities:['Triage / false-positive review','Quality & security gate','Artifact signing'], oss:['DefectDojo','cosign'], comm:['Fortify SSC','Black Duck SRM','Invicti ASPM']},
+    {icon:'cloud', name:'Deploy', tag:'ops', activities:['IaC provisioning','Container registry push','GitOps sync'], oss:['Terraform','Ansible','ArgoCD'], comm:['AWS ECR / ECS / EKS']},
+    {icon:'chart', name:'Monitor', tag:'ops', activities:['SIEM correlation','Cloud posture','IAM audit'], oss:['Prometheus','Grafana','ELK'], comm:['Microsoft Sentinel','AWS GuardDuty']}
+  ];
+  const checkpoints = [
+    {name:'Initial Risk Assessment', between:[0,1], t:0.25, desc:"Lightweight, idea-stage triage — classifies the app's risk tier (High/Medium/Low) from business answers alone, before any architecture exists yet. Decides how much SSDLC rigor everything downstream actually needs."},
+    {name:'Threat Model + App Risk Assessment', between:[0,1], t:0.75, desc:'Runs once real architecture exists, at design time — STRIDE-based threat modeling plus the ongoing, application-specific risk assessment that gets revisited across the SDLC as the design solidifies.'},
+    {name:'Penetration Test', between:[4,5], t:0.5, desc:'Human-driven, typically against staging — runs after automated DAST/IAST confirm the basics are clean, validating business-logic and chained-attack scenarios no scanner catches. Usually triggered for high-risk-tier features, not every single release.'}
+  ];
+  const gates = [
+    {name:'PR / Merge Gate', between:[2,3], t:0.5, desc:'Fast pre-merge checks only: incremental SAST on changed files, secret scan, SCA on changed dependencies, code review. Branch protection blocks the merge until every required status check is green.'},
+    {name:'Release / Security Gate', between:[5,6], t:0.5, desc:'Aggregates every finding so far (full SAST, SCA/SBOM, image scan) against agreed severity thresholds — Critical or unapproved High blocks, Medium/Low is logged. Pass, block, or documented waiver — recorded as evidence.'}
+  ];
+
+  function renderStages(){
+    document.getElementById('pipeline').innerHTML += stages.map((s,i)=>`
+      <div class="stage ${s.tag}" style="animation-delay:${i*0.06}s" onclick="selectMain(${i})">
+        <div class="node">${svgIcon(s.icon)}</div>
+        <div class="stage-name">${s.name}</div>
+        <div class="stage-tag">${s.tag}</div>
+      </div>`).join('');
+  }
+  const detailPanel = document.getElementById('detailPanel');
+  function renderMainDetail(i){
+    const s = stages[i];
+    detailPanel.innerHTML = `
+      <div class="detail">
+        <div class="detail-head">
+          <span class="tag-pill" style="color:var(--${s.tag});background:var(--${s.tag}-dim)">${s.tag}</span>
+          <h3>${s.name}</h3>
+        </div>
+        <div class="cols">
+          <div class="col"><h4>Activities</h4><ul>${s.activities.map(a=>`<li>${a}</li>`).join('')}</ul></div>
+          <div class="col"><h4>Open source</h4><ul>${s.oss.map(a=>`<li>${a}</li>`).join('')}</ul></div>
+          <div class="col"><h4>Commercial</h4><ul>${s.comm.map(a=>`<li>${a}</li>`).join('')}</ul></div>
+        </div>
+      </div>`;
+  }
+  function renderInfoDetail(title, desc, tagLabel, tagColor){
+    detailPanel.innerHTML = `
+      <div class="detail">
+        <div class="detail-head">
+          <span class="tag-pill" style="color:${tagColor};background:var(--panel-3)">${tagLabel}</span>
+          <h3>${title}</h3>
+        </div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.75; margin-top:6px;">${desc}</div>
+      </div>`;
+  }
+  function clearActive(){
+    document.querySelectorAll('.stage').forEach(el=>el.classList.remove('active'));
+    document.querySelectorAll('.overlay-check,.overlay-gate').forEach(el=>el.classList.remove('active'));
+  }
+  function selectMain(i){ clearActive(); document.querySelectorAll('.stage')[i].classList.add('active'); renderMainDetail(i); }
+  function selectCheckpoint(i){ clearActive(); document.querySelectorAll('.overlay-check')[i].classList.add('active'); const c = checkpoints[i]; renderInfoDetail(c.name, c.desc, 'checkpoint', 'var(--text-dim)'); }
+  function selectGate(i){ clearActive(); document.querySelectorAll('.overlay-gate')[i].classList.add('active'); const g = gates[i]; renderInfoDetail(g.name, g.desc, 'gate', 'var(--ops)'); }
+
+  renderStages();
+  selectMain(0);
+
+  function layoutOverlay(){
+    const wrapRect = document.getElementById('pipelineWrap').getBoundingClientRect();
+    const nodeEls = document.querySelectorAll('.stage .node');
+    function centerX(idx){
+      const r = nodeEls[idx].getBoundingClientRect();
+      return (r.left + r.width/2) - wrapRect.left;
+    }
+    let html = '';
+    checkpoints.forEach((c,i)=>{
+      const x0 = centerX(c.between[0]), x1 = centerX(c.between[1]);
+      const x = x0 + (x1-x0)*c.t;
+      html += `<div class="overlay-check" style="left:${x}px" onclick="selectCheckpoint(${i})"><div class="overlay-label">${c.name}</div></div>`;
+    });
+    gates.forEach((g,i)=>{
+      const x0 = centerX(g.between[0]), x1 = centerX(g.between[1]);
+      const x = x0 + (x1-x0)*g.t;
+      html += `<div class="overlay-gate" style="left:${x}px" onclick="selectGate(${i})"><div class="overlay-label">${g.name}</div></div>`;
+    });
+    document.getElementById('overlayLayer').innerHTML = html;
+
+    const planX = centerX(0), monitorX = centerX(stages.length-1), midX = (planX+monitorX)/2;
+    const svg = document.getElementById('feedbackSvg');
+    const path = document.getElementById('feedbackPath');
+    svg.setAttribute('viewBox', `0 0 ${wrapRect.width} 34`);
+    path.setAttribute('d', `M${monitorX},34 Q${midX},0 ${planX},34`);
+  }
+  layoutOverlay();
+  window.addEventListener('load', layoutOverlay);
+  window.addEventListener('resize', layoutOverlay);
+
+  /* ============ PIPELINE SIMULATOR ============ */
+  const simData = [
+    {label:'Developer', tag:'dev', steps:[
+      {label:'Code locally', log:['$ vim payment_service.py — writing new endpoint']},
+      {label:'Pre-commit hook', log:['pre-commit: gitleaks — 0 secrets found ✓']},
+      {label:'git commit', log:['$ git commit -m "add payment endpoint"']}
+    ]},
+    {label:'Pull Request', tag:'sec', steps:[
+      {label:'Open PR', log:['PR #482 opened → triggering CI']},
+      {label:'Fast SAST (diff)', log:['SAST (SonarQube, diff-scan): 1 low finding ✓']},
+      {label:'Secret scan (full history)', log:['secret scan (fetch-depth: 0): clean ✓']},
+      {label:'SCA (changed deps)', log:['SCA (changed deps): 0 new CVEs ✓']},
+      {label:'Code review', log:['code review: approved by @reviewer']},
+      {label:'Gate 1: Merge Gate', gate:true}
+    ]},
+    {label:'Main / Build', tag:'dev', steps:[
+      {label:'Merge to main', log:['merged to main (a3f9c1e)']},
+      {label:'Build artifact', log:['building artifact — build once, promote many']},
+      {label:'Full SAST', log:['full-codebase SAST: 0 new findings ✓']},
+      {label:'SCA + SBOM', log:['SCA full tree + SBOM (CycloneDX) generated ✓']},
+      {label:'Image scan + sign', log:['Trivy image scan: running...', 'Cosign: signing image digest ✓']}
+    ]},
+    {label:'Staging', tag:'sec', steps:[
+      {label:'Deploy to staging', log:['deploying signed artifact to staging']},
+      {label:'DAST', log:['DAST (OWASP ZAP) vs staging: running...']},
+      {label:'IAST', log:['IAST agent: 0 exploitable findings ✓']},
+      {label:'Pentest', log:['pentest (risk-tier triggered): passed ✓']},
+      {label:'Gate 2: Release Gate', gate:true}
+    ]},
+    {label:'Production', tag:'ops', steps:[
+      {label:'Signature verify', log:['Kyverno: verifying Cosign signature at admission ✓']},
+      {label:'GitOps deploy', log:['ArgoCD: syncing desired state ✓']},
+      {label:'Canary rollout', log:['canary 10% → 50% → 100% ✓']},
+      {label:'Monitor', log:['SIEM + Falco: watching runtime — all clear ✓']}
+    ]}
+  ];
+  const flatSteps = [];
+  simData.forEach((zone, zi) => zone.steps.forEach((step, si) => flatSteps.push({zi, si, ...step, elId:`sim-step-${zi}-${si}`})));
+
+  function renderZones(){
+    let html = '';
+    simData.forEach((zone, zi) => {
+      html += `<div class="sim-zone ${zone.tag}"><span class="sim-zone-label">${zone.label}</span><div class="sim-steps">`;
+      zone.steps.forEach((step, si) => {
+        if(si>0) html += `<div class="sim-connector" id="conn-${zi}-${si}"></div>`;
+        html += `<div class="sim-step ${step.gate?'gate':''}" id="sim-step-${zi}-${si}"><div class="sim-step-dot"></div><div class="sim-step-label">${step.label}</div></div>`;
+      });
+      html += `</div></div>`;
+    });
+    document.getElementById('simZones').innerHTML = html;
+  }
+  renderZones();
+
+  let scenario = 'happy', curIdx = -1, playInterval = null, blockedFlag = false;
+  function appendLog(text, cls){
+    const log = document.getElementById('simLog');
+    const empty = log.querySelector('.sim-log-empty');
+    if(empty) empty.remove();
+    const line = document.createElement('div');
+    line.className = 'sim-log-line' + (cls?(' '+cls):'');
+    line.textContent = text;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  }
+  function markDone(idx){
+    const f = flatSteps[idx];
+    const el = document.getElementById(f.elId);
+    el.classList.remove('current');
+    el.classList.add('done');
+    const nextConn = document.getElementById(`conn-${f.zi}-${f.si+1}`);
+    if(nextConn) nextConn.classList.add('done');
+  }
+  function stopPlay(){
+    if(playInterval){ clearInterval(playInterval); playInterval = null; }
+    document.getElementById('simPlay').textContent = '▶ play';
+  }
+  function advanceStep(){
+    if(blockedFlag) return;
+    curIdx++;
+    if(curIdx >= flatSteps.length){
+      appendLog('$ trace complete — commit is live in production ✓', 'ok');
+      stopPlay();
+      document.getElementById('simStep').disabled = true;
+      document.getElementById('simPlay').disabled = true;
+      return;
+    }
+    if(curIdx>0) markDone(curIdx-1);
+    const f = flatSteps[curIdx];
+    const el = document.getElementById(f.elId);
+    el.classList.add('current');
+    el.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
+    const isBlockingGate = (scenario==='blocked' && f.gate && f.zi===3 && f.si===4);
+    if(f.gate){
+      appendLog((f.zi===1?'Gate 1 — Merge Gate':'Gate 2 — Release Gate') + ': evaluating...', 'info');
+      if(isBlockingGate){
+        setTimeout(()=>{
+          appendLog('Trivy image scan (re-verified): 1 CRITICAL CVE found (CVE-2026-41022)', 'fail');
+          appendLog('Gate 2 — Release Gate: BLOCKED ✗', 'fail');
+          appendLog('returning to development for remediation — hit reset to retry', 'warn');
+          el.classList.remove('current');
+          el.classList.add('blocked');
+          blockedFlag = true;
+          stopPlay();
+          document.getElementById('simStep').disabled = true;
+          document.getElementById('simPlay').disabled = true;
+        }, 700);
+      } else {
+        setTimeout(()=>{ appendLog((f.zi===1?'Gate 1 — Merge Gate':'Gate 2 — Release Gate') + ': PASS ✓', 'ok'); }, 500);
+      }
+    } else {
+      f.log.forEach((l,li)=> setTimeout(()=>appendLog(l, li===f.log.length-1?'ok':null), li*250));
+    }
+  }
+  function resetSim(){
+    stopPlay();
+    curIdx = -1;
+    blockedFlag = false;
+    document.querySelectorAll('.sim-step').forEach(el=>el.classList.remove('done','current','blocked'));
+    document.querySelectorAll('.sim-connector').forEach(el=>el.classList.remove('done'));
+    document.getElementById('simLog').innerHTML = '<div class="sim-log-line sim-log-empty">$ press play to trace a commit through the pipeline_</div>';
+    document.getElementById('simStep').disabled = false;
+    document.getElementById('simPlay').disabled = false;
+  }
+  document.getElementById('simPlay').addEventListener('click', ()=>{
+    if(blockedFlag) return;
+    if(playInterval){ stopPlay(); return; }
+    document.getElementById('simPlay').textContent = '⏸ pause';
+    playInterval = setInterval(()=>{ advanceStep(); if(curIdx>=flatSteps.length-1 || blockedFlag) stopPlay(); }, 1200);
+  });
+  document.getElementById('simStep').addEventListener('click', ()=>{ stopPlay(); advanceStep(); });
+  document.getElementById('simReset').addEventListener('click', resetSim);
+  document.getElementById('btnHappy').addEventListener('click', ()=>{
+    scenario='happy';
+    document.getElementById('btnHappy').classList.add('active');
+    document.getElementById('btnBlocked').classList.remove('active');
+    resetSim();
+  });
+  document.getElementById('btnBlocked').addEventListener('click', ()=>{
+    scenario='blocked';
+    document.getElementById('btnBlocked').classList.add('active');
+    document.getElementById('btnHappy').classList.remove('active');
+    resetSim();
+  });
+
+  let expanded = false;
+  function toggleAll(){
+    expanded = !expanded;
+    document.querySelectorAll('details.qa').forEach(d => d.open = expanded);
+    document.querySelector('.toggle-btn').textContent = expanded ? 'collapse all' : 'expand all';
+  }
+</script>
+</body>
+</html>
